@@ -117,23 +117,23 @@ export default function SummaryDetailPage() {
     };
 
     return (
-        <div className="space-y-6 animate-fade-in max-w-7xl mx-auto">
+        <div className="space-y-4 md:space-y-6 animate-fade-in max-w-7xl mx-auto">
             {/* Back Button */}
             <button
                 onClick={() => router.back()}
-                className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-accent-600 transition-colors uppercase tracking-wider group"
+                className="flex items-center gap-2 text-xs md:text-sm font-bold text-gray-500 hover:text-accent-600 transition-colors uppercase tracking-wider group"
             >
-                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                <ArrowLeft className="w-3.5 h-3.5 md:w-4 md:h-4 group-hover:-translate-x-1 transition-transform" />
                 Back to Summaries
             </button>
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-8">
                 {/* Sidebar (TOC & Key Points) */}
-                <div className="lg:col-span-1 order-2 lg:order-1 space-y-6">
+                <div className="lg:col-span-1 order-2 lg:order-1 space-y-4 md:space-y-6">
                     {/* Table of Contents */}
-                    <div className="bg-white rounded-lg p-6 shadow-sm border-2 border-dashed border-gray-200">
-                        <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2 text-sm uppercase tracking-wider">
-                            <Hash className="w-4 h-4 text-gray-400" />
+                    <div className="bg-white rounded-lg p-5 md:p-6 shadow-sm border-2 border-dashed border-gray-200">
+                        <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2 text-xs md:text-sm uppercase tracking-wider">
+                            <Hash className="w-3.5 h-3.5 md:w-4 md:h-4 text-gray-400" />
                             Contents
                         </h3>
                         <nav className="space-y-3">
@@ -158,9 +158,9 @@ export default function SummaryDetailPage() {
                     </div>
 
                     {/* Key Points */}
-                    <div className="bg-white rounded-lg p-6 shadow-sm border-2 border-dashed border-gray-200">
-                        <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2 text-sm uppercase tracking-wider">
-                            <List className="w-4 h-4 text-gray-400" />
+                    <div className="bg-white rounded-lg p-5 md:p-6 shadow-sm border-2 border-dashed border-gray-200">
+                        <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2 text-xs md:text-sm uppercase tracking-wider">
+                            <List className="w-3.5 h-3.5 md:w-4 md:h-4 text-gray-400" />
                             Key Points
                         </h3>
                         <ul className="space-y-3">
@@ -174,9 +174,9 @@ export default function SummaryDetailPage() {
                     </div>
 
                     {/* Personal Notes */}
-                    <div className="bg-white rounded-lg p-6 shadow-sm border-2 border-dashed border-gray-200">
-                        <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2 text-sm uppercase tracking-wider">
-                            <FileText className="w-4 h-4 text-gray-400" />
+                    <div className="bg-white rounded-lg p-5 md:p-6 shadow-sm border-2 border-dashed border-gray-200">
+                        <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2 text-xs md:text-sm uppercase tracking-wider">
+                            <FileText className="w-3.5 h-3.5 md:w-4 md:h-4 text-gray-400" />
                             My Annotations
                         </h3>
                         <textarea
@@ -189,52 +189,52 @@ export default function SummaryDetailPage() {
                 </div>
 
                 {/* Main Content */}
-                <div className="lg:col-span-3 order-1 lg:order-2 space-y-8">
-                    <div className="bg-white rounded-lg p-8 shadow-sm border-2 border-dashed border-gray-200">
+                <div className="lg:col-span-3 order-1 lg:order-2 space-y-4 md:space-y-8">
+                    <div className="bg-white rounded-lg p-5 md:p-8 shadow-sm border-2 border-dashed border-gray-200">
                         {/* Header */}
-                        <div className="flex items-start justify-between mb-8 pb-8 border-b-2 border-dashed border-gray-100">
-                            <div className="space-y-4">
+                        <div className="flex flex-col md:flex-row md:items-start justify-between mb-6 md:mb-8 pb-6 md:pb-8 border-b-2 border-dashed border-gray-100 gap-4">
+                            <div className="space-y-3 md:space-y-4">
                                 <div className="flex items-center gap-3">
-                                    <span className="px-3 py-1.5 text-[11px] font-black text-accent-600 bg-accent-50 rounded border border-dashed border-accent-200 uppercase tracking-widest">
+                                    <span className="px-2 py-1 md:px-3 md:py-1.5 text-[10px] md:text-[11px] font-black text-accent-600 bg-accent-50 rounded border border-dashed border-accent-200 uppercase tracking-widest">
                                         {summary.novel}
                                     </span>
-                                    <span className="px-3 py-1.5 text-[11px] font-bold text-gray-500 bg-gray-50 rounded border border-dashed border-gray-200 uppercase tracking-widest">
+                                    <span className="px-2 py-1 md:px-3 md:py-1.5 text-[10px] md:text-[11px] font-bold text-gray-500 bg-gray-50 rounded border border-dashed border-gray-200 uppercase tracking-widest">
                                         {summary.chapter}
                                     </span>
                                 </div>
-                                <h1 className="text-4xl font-black text-gray-900 tracking-tight leading-tight">
+                                <h1 className="text-2xl md:text-4xl font-black text-gray-900 tracking-tight leading-tight">
                                     {summary.title}
                                 </h1>
                             </div>
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-3 self-start">
                                 <button
                                     onClick={() => setIsBookmarked(!isBookmarked)}
                                     className={cn(
-                                        'p-2.5 rounded-lg border-2 border-dashed transition-all group',
+                                        'p-2 md:p-2.5 rounded-lg border-2 border-dashed transition-all group',
                                         isBookmarked
                                             ? 'bg-accent-50 border-accent-200 text-accent-600'
                                             : 'bg-white border-gray-200 text-gray-400 hover:border-accent-200 hover:text-accent-600'
                                     )}
                                 >
-                                    <Bookmark className={cn('w-5 h-5', isBookmarked && 'fill-current')} />
+                                    <Bookmark className={cn('w-4 h-4 md:w-5 md:h-5', isBookmarked && 'fill-current')} />
                                 </button>
-                                <button className="p-2.5 rounded-lg bg-white border-2 border-dashed border-gray-200 text-gray-400 hover:border-accent-200 hover:text-accent-600 transition-all">
-                                    <Download className="w-5 h-5" />
+                                <button className="p-2 md:p-2.5 rounded-lg bg-white border-2 border-dashed border-gray-200 text-gray-400 hover:border-accent-200 hover:text-accent-600 transition-all">
+                                    <Download className="w-4 h-4 md:w-5 md:h-5" />
                                 </button>
-                                <button className="p-2.5 rounded-lg bg-white border-2 border-dashed border-gray-200 text-gray-400 hover:border-accent-200 hover:text-accent-600 transition-all">
-                                    <Printer className="w-5 h-5" />
+                                <button className="p-2 md:p-2.5 rounded-lg bg-white border-2 border-dashed border-gray-200 text-gray-400 hover:border-accent-200 hover:text-accent-600 transition-all">
+                                    <Printer className="w-4 h-4 md:w-5 md:h-5" />
                                 </button>
                             </div>
                         </div>
 
                         {/* Important Quotes Section */}
                         {summary.importantQuotes && summary.importantQuotes.length > 0 && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-8 md:mb-10">
                                 {summary.importantQuotes.map((quote, index) => (
-                                    <div key={index} className="bg-gray-50 rounded-lg p-5 border-l-4 border-accent-500 italic">
-                                        <Quote className="w-6 h-6 text-accent-300 mb-2" />
-                                        <p className="text-gray-800 font-serif text-lg mb-3">"{quote.quote}"</p>
-                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider not-italic">
+                                    <div key={index} className="bg-gray-50 rounded-lg p-4 md:p-5 border-l-4 border-accent-500 italic">
+                                        <Quote className="w-5 h-5 md:w-6 md:h-6 text-accent-300 mb-2" />
+                                        <p className="text-gray-800 font-serif text-base md:text-lg mb-2 md:mb-3">"{quote.quote}"</p>
+                                        <p className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider not-italic">
                                             — {quote.context}
                                         </p>
                                     </div>
@@ -243,45 +243,45 @@ export default function SummaryDetailPage() {
                         )}
 
                         {/* Content */}
-                        <article className="prose prose-gray max-w-none prose-headings:font-black prose-p:text-gray-600 prose-a:text-accent-600 hover:prose-a:text-accent-700">
+                        <article className="prose prose-sm md:prose-base prose-gray max-w-none prose-headings:font-black prose-p:text-gray-600 prose-a:text-accent-600 hover:prose-a:text-accent-700">
                             {renderContent(summary.content)}
                         </article>
                     </div>
 
                     {/* Next Chapter/Related */}
-                    <div className="flex flex-wrap gap-4">
+                    <div className="flex flex-col md:flex-row gap-3 md:gap-4">
                         {relatedVideo && (
                             <Link
                                 href={`/dashboard/videos/${relatedVideo.id}`}
-                                className="flex-1 flex items-center justify-between p-5 bg-white rounded-lg border-2 border-dashed border-gray-200 hover:border-blue-300 hover:shadow-md transition-all group"
+                                className="flex-1 flex items-center justify-between p-4 md:p-5 bg-white rounded-lg border-2 border-dashed border-gray-200 hover:border-blue-300 hover:shadow-md transition-all group"
                             >
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
-                                        <Video className="w-5 h-5" />
+                                <div className="flex items-center gap-3 md:gap-4">
+                                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                                        <Video className="w-4 h-4 md:w-5 md:h-5" />
                                     </div>
                                     <div>
-                                        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5">Watch Video</p>
-                                        <p className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{relatedVideo.title}</p>
+                                        <p className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5">Watch Video</p>
+                                        <p className="text-sm md:text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{relatedVideo.title}</p>
                                     </div>
                                 </div>
-                                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
+                                <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
                             </Link>
                         )}
                         {relatedQuiz && (
                             <Link
                                 href={`/dashboard/quiz/${relatedQuiz.id}`}
-                                className="flex-1 flex items-center justify-between p-5 bg-white rounded-lg border-2 border-dashed border-gray-200 hover:border-green-300 hover:shadow-md transition-all group"
+                                className="flex-1 flex items-center justify-between p-4 md:p-5 bg-white rounded-lg border-2 border-dashed border-gray-200 hover:border-green-300 hover:shadow-md transition-all group"
                             >
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center text-green-600">
-                                        <CheckCircle className="w-5 h-5" />
+                                <div className="flex items-center gap-3 md:gap-4">
+                                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-green-50 flex items-center justify-center text-green-600">
+                                        <CheckCircle className="w-4 h-4 md:w-5 md:h-5" />
                                     </div>
                                     <div>
-                                        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5">Take Quiz</p>
-                                        <p className="font-bold text-gray-900 group-hover:text-green-600 transition-colors">{relatedQuiz.title}</p>
+                                        <p className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5">Take Quiz</p>
+                                        <p className="text-sm md:text-base font-bold text-gray-900 group-hover:text-green-600 transition-colors">{relatedQuiz.title}</p>
                                     </div>
                                 </div>
-                                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-green-600 group-hover:translate-x-1 transition-all" />
+                                <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-green-600 group-hover:translate-x-1 transition-all" />
                             </Link>
                         )}
                     </div>
