@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Search, Bell, HelpCircle } from 'lucide-react';
 import { useAuth } from '@/src/lib/auth';
 
@@ -55,9 +56,12 @@ export function DashboardNav() {
                 </div>
 
                 {/* User */}
-                <div className="flex items-center gap-4 pl-4 ml-4 border-l-2 border-dashed border-gray-200">
+                <Link
+                    href="/dashboard/profile"
+                    className="flex items-center gap-4 pl-4 ml-4 border-l-2 border-dashed border-gray-200 group cursor-pointer hover:bg-gray-50/50 transition-colors rounded-l-lg"
+                >
                     <div className="text-right hidden sm:block">
-                        <p className="text-sm font-black text-gray-900 leading-none mb-1">
+                        <p className="text-sm font-black text-gray-900 leading-none mb-1 group-hover:text-accent-600 transition-colors">
                             {user?.name || 'Student'}
                         </p>
                         <div className="flex items-center justify-end gap-1.5">
@@ -72,9 +76,9 @@ export function DashboardNav() {
                     <img
                         src={user?.profilePicture || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex'}
                         alt="Profile"
-                        className="w-11 h-11 rounded-lg object-cover border-2 border-dashed border-gray-200 grayscale contrast-125 hover:grayscale-0 transition-all duration-300"
+                        className="w-11 h-11 rounded-lg object-cover border-2 border-dashed border-gray-200 grayscale contrast-125 group-hover:grayscale-0 group-hover:border-accent-300 transition-all duration-300"
                     />
-                </div>
+                </Link>
             </div>
         </header>
     );

@@ -12,7 +12,6 @@ import {
     Clock,
     BarChart3,
     LogOut,
-    Settings,
     Crown,
     ChevronRight,
 } from 'lucide-react';
@@ -113,39 +112,34 @@ export function Sidebar() {
             {/* User Section */}
             <div className="p-4 border-t-2 border-dashed border-gray-100">
                 {/* User Profile */}
-                <div className="flex items-center gap-3 p-3 rounded-lg border-2 border-dashed border-gray-50 bg-gray-50/50 mb-4">
+                <Link
+                    href="/dashboard/profile"
+                    className="flex items-center gap-3 p-3 rounded-lg border-2 border-dashed border-gray-50 bg-gray-50/50 mb-4 hover:border-accent-200 hover:bg-white transition-all group"
+                >
                     <img
                         src={user?.profilePicture || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex'}
                         alt="Profile"
-                        className="w-10 h-10 rounded-lg object-cover grayscale contrast-125"
+                        className="w-10 h-10 rounded-lg object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all"
                     />
                     <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-gray-900 truncate tracking-tight">
+                        <p className="text-sm font-bold text-gray-900 truncate tracking-tight group-hover:text-accent-600 transition-colors">
                             {user?.name || 'Student'}
                         </p>
                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tight truncate leading-none">
                             Level {user?.level || 1} Scholar
                         </p>
                     </div>
-                </div>
+                    <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-accent-400 group-hover:translate-x-0.5 transition-all" />
+                </Link>
 
-                {/* Settings & Logout */}
-                <div className="grid grid-cols-2 gap-2">
-                    <Link
-                        href="/dashboard/settings"
-                        className="flex items-center justify-center gap-2 py-2.5 text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all text-[10px] font-black uppercase tracking-widest border border-dashed border-gray-200"
-                    >
-                        <Settings className="w-4 h-4" />
-                        Set
-                    </Link>
-                    <button
-                        onClick={handleLogout}
-                        className="flex items-center justify-center gap-2 py-2.5 text-red-500 hover:text-white hover:bg-red-500 rounded-lg transition-all text-[10px] font-black uppercase tracking-widest border border-dashed border-red-200"
-                    >
-                        <LogOut className="w-4 h-4" />
-                        Exit
-                    </button>
-                </div>
+                {/* Logout */}
+                <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 text-red-500 hover:text-white hover:bg-red-500 rounded-lg transition-all text-[10px] font-black uppercase tracking-widest border border-dashed border-red-200"
+                >
+                    <LogOut className="w-4 h-4" />
+                    Sign Out
+                </button>
             </div>
         </aside>
     );
