@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User } from '@/types';
+import { User } from '@/src//types';
 
 // Mock user for development
 const MOCK_USER: User = {
