@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@theme {
+  /* Primary Colors - Monochrome (Notion-inspired B&W) */
+  --color-primary-50: #ffffff;
+  --color-primary-100: #f7f7f7;
+  --color-primary-200: #efefef;
+  --color-primary-300: #dfdfdf;
+  --color-primary-400: #d1d1d1;
+  --color-primary-500: #2f2f2f;
+  --color-primary-600: #1a1a1a;
+  --color-primary-700: #000000;
+  --color-primary-800: #000000;
+  --color-primary-900: #000000;
+
+  /* Accent Color - Vibrant Orange (Modern & High Energy) */
+  --color-accent-50: #fff5f0;
+  --color-accent-100: #ffeadb;
+  --color-accent-200: #ffd1b3;
+  --color-accent-300: #ffb185;
+  --color-accent-400: #ff844d;
+  --color-accent-500: #ff5500;
+  --color-accent-600: #e64d00;
+  --color-accent-700: #bf4000;
+  --color-accent-800: #993300;
+  --color-accent-900: #7d2a00;
+
+  /* Neutral Colors */
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-DEFAULT: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+  /* Border Radius - Refined & Sharper */
+  --radius-sm: 0.25rem;
+  --radius-DEFAULT: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+
+  /* Font Families */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* Minimal CSS Resets */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: #fafafa;
+  color: var(--color-gray-900);
+  font-family: var(--font-geist-sans), 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Focus States - Accessibility */
+*:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+/* Remove default scrollbar for cleaner look */
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
