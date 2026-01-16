@@ -86,7 +86,7 @@ export default function VideosPage() {
         <div className="space-y-6 md:space-y-8 animate-fade-in max-w-7xl mx-auto p-2 md:p-0">
             {/* Header */}
             <div className="flex flex-col gap-2">
-                <h1 className="text-4xl font-black text-gray-900 tracking-tight">Video Library</h1>
+                <h1 className="text-2xl md:text-4xl font-black text-gray-900 tracking-tight">Video Library</h1>
                 <p className="text-sm md:text-base text-gray-500 font-medium">Watch expert video tutorials on English literature</p>
             </div>
 

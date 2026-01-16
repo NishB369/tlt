@@ -18,15 +18,15 @@ export default function NotesPage() {
     });
 
     return (
-        <div className="space-y-8 animate-fade-in max-w-7xl mx-auto">
+        <div className="space-y-6 md:space-y-8 animate-fade-in max-w-7xl mx-auto">
             {/* Header */}
             <div className="flex flex-col gap-2">
-                <h1 className="text-4xl font-black text-gray-900 tracking-tight">Study Notes</h1>
-                <p className="text-gray-500 font-medium">Comprehensive notes and analysis for your literature studies</p>
+                <h1 className="text-2xl md:text-4xl font-black text-gray-900 tracking-tight">Study Notes</h1>
+                <p className="text-sm md:text-base text-gray-500 font-medium">Comprehensive notes and analysis for your literature studies</p>
             </div>
 
             {/* Filters */}
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
                 {/* Search */}
                 <div className="flex-1 relative group">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-accent-500 transition-colors" />
@@ -35,7 +35,7 @@ export default function NotesPage() {
                         placeholder="Search notes..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-11 pr-4 py-3 bg-white border-2 border-dashed border-gray-200 rounded-lg text-sm font-medium text-gray-900 placeholder-gray-400 focus:outline-none focus:border-accent-500 focus:ring-0 transition-all shadow-sm group-hover:border-gray-300"
+                        className="w-full pl-11 pr-4 py-2.5 md:py-3 bg-white border-2 border-dashed border-gray-200 rounded-lg text-sm font-medium text-gray-900 placeholder-gray-400 focus:outline-none focus:border-accent-500 focus:ring-0 transition-all shadow-sm group-hover:border-gray-300"
                     />
                 </div>
 
@@ -44,7 +44,7 @@ export default function NotesPage() {
                     <select
                         value={selectedNovel}
                         onChange={(e) => setSelectedNovel(e.target.value)}
-                        className="appearance-none pl-4 pr-10 py-3 bg-white border-2 border-dashed border-gray-200 rounded-lg text-sm font-bold text-gray-700 focus:outline-none focus:border-accent-500 focus:ring-0 transition-all cursor-pointer hover:border-gray-300 min-w-[200px]"
+                        className="w-full sm:w-auto appearance-none pl-4 pr-10 py-2.5 md:py-3 bg-white border-2 border-dashed border-gray-200 rounded-lg text-sm font-bold text-gray-700 focus:outline-none focus:border-accent-500 focus:ring-0 transition-all cursor-pointer hover:border-gray-300 min-w-[200px]"
                     >
                         <option value="all">All Novels</option>
                         {MOCK_NOVELS.map((novel) => (
@@ -60,16 +60,16 @@ export default function NotesPage() {
             </div>
 
             {/* Notes Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 {filteredNotes.map((note) => (
                     <Link
                         key={note.id}
                         href={`/dashboard/notes/${note.id}`}
-                        className="group flex flex-col bg-white rounded-lg p-6 border-2 border-dashed border-gray-200 hover:border-accent-400 transition-all duration-300 hover:-translate-y-1"
+                        className="group flex flex-col bg-white rounded-lg p-5 md:p-6 border-2 border-dashed border-gray-200 hover:border-accent-400 transition-all duration-300 hover:-translate-y-1"
                     >
-                        <div className="flex items-start justify-between mb-5">
-                            <div className="p-3 rounded-lg border-2 border-dashed border-gray-100 bg-gray-50 group-hover:border-accent-200 group-hover:bg-accent-50 transition-colors">
-                                <BookOpen className="w-6 h-6 text-gray-400 group-hover:text-accent-500 transition-colors" />
+                        <div className="flex items-start justify-between mb-4 md:mb-5">
+                            <div className="p-2.5 md:p-3 rounded-lg border-2 border-dashed border-gray-100 bg-gray-50 group-hover:border-accent-200 group-hover:bg-accent-50 transition-colors">
+                                <BookOpen className="w-5 h-5 md:w-6 md:h-6 text-gray-400 group-hover:text-accent-500 transition-colors" />
                             </div>
                             <button
                                 className="p-2 rounded-lg text-gray-300 hover:text-accent-500 hover:bg-accent-50 transition-all"
@@ -83,7 +83,7 @@ export default function NotesPage() {
                         </div>
 
                         <div className="flex items-center gap-2 mb-3">
-                            <span className="px-2 py-1 text-[10px] font-black text-accent-600 bg-accent-50 rounded border border-dashed border-accent-200 uppercase tracking-widest">
+                            <span className="px-2 py-0.5 md:py-1 text-[10px] font-black text-accent-600 bg-accent-50 rounded border border-dashed border-accent-200 uppercase tracking-widest">
                                 {note.novel}
                             </span>
                             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">
@@ -91,11 +91,11 @@ export default function NotesPage() {
                             </span>
                         </div>
 
-                        <h3 className="font-bold text-gray-900 text-lg mb-3 group-hover:text-accent-600 transition-colors line-clamp-2 leading-tight">
+                        <h3 className="font-bold text-gray-900 text-base md:text-lg mb-2 md:mb-3 group-hover:text-accent-600 transition-colors line-clamp-2 leading-tight">
                             {note.title}
                         </h3>
 
-                        <p className="text-sm text-gray-500 leading-relaxed mb-6 line-clamp-3 border-l-2 border-gray-100 pl-3 group-hover:border-accent-200 transition-colors">
+                        <p className="text-sm text-gray-500 leading-relaxed mb-4 md:mb-6 line-clamp-3 border-l-2 border-gray-100 pl-3 group-hover:border-accent-200 transition-colors">
                             {note.content.replace(/[#*\n]/g, ' ').slice(0, 150)}...
                         </p>
 
@@ -114,12 +114,12 @@ export default function NotesPage() {
 
             {/* Empty State */}
             {filteredNotes.length === 0 && (
-                <div className="text-center py-20 bg-white rounded-lg border-2 border-dashed border-gray-200">
-                    <div className="w-16 h-16 bg-gray-50 rounded-lg flex items-center justify-center mx-auto mb-4 border-2 border-dashed border-gray-200">
-                        <FileText className="w-8 h-8 text-gray-300" />
+                <div className="text-center py-10 md:py-20 bg-white rounded-lg border-2 border-dashed border-gray-200">
+                    <div className="w-12 h-12 md:w-16 md:h-16 bg-gray-50 rounded-lg flex items-center justify-center mx-auto mb-3 md:mb-4 border-2 border-dashed border-gray-200">
+                        <FileText className="w-6 h-6 md:w-8 md:h-8 text-gray-300" />
                     </div>
-                    <h3 className="text-lg font-black text-gray-900 mb-2">No notes found</h3>
-                    <p className="text-sm font-medium text-gray-500 max-w-md mx-auto">
+                    <h3 className="text-base md:text-lg font-black text-gray-900 mb-2">No notes found</h3>
+                    <p className="text-xs md:text-sm font-medium text-gray-500 max-w-md mx-auto px-4">
                         We couldn't find any notes matching your search. Try adjusting your filters or search terms.
                     </p>
                 </div>
