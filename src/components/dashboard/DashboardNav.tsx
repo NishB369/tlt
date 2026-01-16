@@ -77,7 +77,7 @@ export function DashboardNav({ onMenuClick }: DashboardNavProps) {
                 {/* User */}
                 <Link
                     href="/dashboard/profile"
-                    className="flex items-center gap-3 pl-3 md:pl-4 ml-2 md:ml-4 border-l-2 border-dashed border-gray-200 group cursor-pointer hover:bg-gray-50/50 transition-colors rounded-l-lg"
+                    className="flex items-center gap-3 md:pl-4 md:ml-4 border-2 md:border-l-2 border-dashed border-gray-200 group cursor-pointer hover:bg-gray-50/50 transition-colors rounded-lg md:rounded-l-lg"
                 >
                     <div className="text-right hidden sm:block">
                         <p className="text-sm font-black text-gray-900 leading-none mb-1 group-hover:text-accent-600 transition-colors">
@@ -95,7 +95,7 @@ export function DashboardNav({ onMenuClick }: DashboardNavProps) {
                     <img
                         src={user?.profilePicture || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex'}
                         alt="Profile"
-                        className="w-9 h-9 md:w-11 md:h-11 rounded-lg object-cover border-2 border-dashed border-gray-200 grayscale contrast-125 group-hover:grayscale-0 group-hover:border-accent-300 transition-all duration-300"
+                        className="w-8 h-8 md:w-11 md:h-11 rounded-lg object-cover border-2 border-dashed border-gray-200 grayscale contrast-125 group-hover:grayscale-0 group-hover:border-accent-300 transition-all duration-300"
                     />
                 </Link>
             </div>

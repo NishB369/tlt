@@ -44,11 +44,11 @@ export default function BookmarksPage() {
     };
 
     return (
-        <div className="space-y-6 animate-fade-in">
+        <div className="space-y-4 md:space-y-6 animate-fade-in max-w-7xl mx-auto">
             {/* Header */}
             <div>
-                <h1 className="text-4xl font-black text-gray-900 mb-2 tracking-tight">Bookmarks</h1>
-                <p className="text-gray-500 font-medium">Your saved content for quick access</p>
+                <h1 className="text-2xl md:text-4xl font-black text-gray-900 mb-1 md:mb-2 tracking-tight">Bookmarks</h1>
+                <p className="text-sm md:text-base text-gray-500 font-medium">Your saved content for quick access</p>
             </div>
 
             {/* Bookmarks List */}
@@ -61,12 +61,37 @@ export default function BookmarksPage() {
                         <Link
                             key={index}
                             href={getLink(bookmark.type, bookmark.item.id)}
-                            className="group flex items-center gap-4 p-4 hover:bg-gray-50 transition-all border-b-2 border-dashed border-gray-100 last:border-b-0"
+                            className="group flex flex-col sm:flex-row sm:items-center gap-3 md:gap-4 p-4 hover:bg-gray-50 transition-all border-b-2 border-dashed border-gray-100 last:border-b-0"
                         >
-                            <div className={cn("w-12 h-12 rounded-lg flex items-center justify-center border-2 border-dashed transition-colors", colorClass)}>
-                                <Icon className="w-6 h-6" />
+                            <div className="flex items-center gap-3 md:gap-4 w-full sm:w-auto">
+                                <div className={cn("w-10 h-10 md:w-12 md:h-12 rounded-lg flex items-center justify-center border-2 border-dashed transition-colors flex-shrink-0", colorClass)}>
+                                    <Icon className="w-5 h-5 md:w-6 md:h-6" />
+                                </div>
+                                <div className="sm:hidden flex-1 min-w-0">
+                                    <p className="font-bold text-gray-900 text-base line-clamp-1">
+                                        {bookmark.item.title}
+                                    </p>
+                                    <p className="text-[10px] font-bold text-gray-400 capitalize flex items-center gap-2">
+                                        <span className="uppercase tracking-wider">{bookmark.type}</span>
+                                        <span>•</span>
+                                        <span className="truncate max-w-[150px]">{'novel' in bookmark.item ? bookmark.item.novel : ''}</span>
+                                    </p>
+                                </div>
+                                {/* Mobile Actions */}
+                                <div className="sm:hidden flex items-center">
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            // Remove bookmark
+                                        }}
+                                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                    >
+                                        <Bookmark className="w-4 h-4 fill-current" />
+                                    </button>
+                                </div>
                             </div>
-                            <div className="flex-1 min-w-0">
+
+                            <div className="hidden sm:block flex-1 min-w-0">
                                 <p className="font-bold text-gray-900 text-lg group-hover:text-primary-600 transition-colors truncate">
                                     {bookmark.item.title}
                                 </p>
@@ -76,27 +101,30 @@ export default function BookmarksPage() {
                                     <span>{'novel' in bookmark.item ? bookmark.item.novel : ''}</span>
                                 </p>
                             </div>
-                            <button
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    // Remove bookmark
-                                }}
-                                className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                            >
-                                <Bookmark className="w-5 h-5 fill-current" />
-                            </button>
-                            <ArrowRight className="w-5 h-5 text-gray-300 group-hover:text-primary-500 group-hover:translate-x-1 transition-all" />
+
+                            <div className="hidden sm:flex items-center gap-2">
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        // Remove bookmark
+                                    }}
+                                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                >
+                                    <Bookmark className="w-5 h-5 fill-current" />
+                                </button>
+                                <ArrowRight className="w-5 h-5 text-gray-300 group-hover:text-primary-500 group-hover:translate-x-1 transition-all" />
+                            </div>
                         </Link>
                     );
                 })}
 
                 {bookmarks.length === 0 && (
-                    <div className="text-center py-16">
-                        <div className="w-16 h-16 bg-gray-50 rounded-full border-2 border-dashed border-gray-200 flex items-center justify-center mx-auto mb-4">
-                            <Bookmark className="w-8 h-8 text-gray-400" />
+                    <div className="text-center py-10 md:py-16">
+                        <div className="w-12 h-12 md:w-16 md:h-16 bg-gray-50 rounded-full border-2 border-dashed border-gray-200 flex items-center justify-center mx-auto mb-3 md:mb-4">
+                            <Bookmark className="w-6 h-6 md:w-8 md:h-8 text-gray-400" />
                         </div>
-                        <h3 className="text-xl font-black text-gray-900 mb-2">No bookmarks yet</h3>
-                        <p className="text-gray-500 font-medium">
+                        <h3 className="text-lg md:text-xl font-black text-gray-900 mb-1 md:mb-2">No bookmarks yet</h3>
+                        <p className="text-sm md:text-base text-gray-500 font-medium px-4">
                             Start saving content to access it quickly later.
                         </p>
                     </div>
