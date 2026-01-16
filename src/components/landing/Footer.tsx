@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { BookOpen, Twitter, Github, Linkedin, Mail } from 'lucide-react';
+import { BookOpen, Twitter, Github, Linkedin, Mail, Heart } from 'lucide-react';
 
 export function Footer() {
     const currentYear = new Date().getFullYear();
@@ -145,7 +145,7 @@ export function Footer() {
                             © {currentYear} Literature Talks. All rights reserved.
                         </p>
                         <p className="text-xs text-gray-400 font-medium tracking-tight">
-                            Made with <span className="text-black">♥</span> for literature students
+                            Made with <Heart className="w-3 h-3 text-black inline mx-1 fill-current" /> for literature students
                         </p>
                     </div>
                 </div>

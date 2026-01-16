@@ -1,4 +1,4 @@
-import { Video, Note, Quiz, Summary, Novel } from '@/types';
+import { Video, Note, Quiz, Summary, Novel } from '@/src/types';
 
 // Navigation Items
 export const NAV_ITEMS = [
@@ -31,42 +31,42 @@ export const ACHIEVEMENTS = {
         id: 'first_video',
         title: 'First Steps',
         description: 'Watch your first video',
-        icon: '🎬',
+        icon: 'Film',
         xpReward: 25,
     },
     QUIZ_MASTER: {
         id: 'quiz_master',
         title: 'Quiz Master',
         description: 'Score 100% on 5 quizzes',
-        icon: '🎯',
+        icon: 'Target',
         xpReward: 100,
     },
     STREAK_7: {
         id: 'streak_7',
         title: 'Week Warrior',
         description: 'Maintain a 7-day study streak',
-        icon: '🔥',
+        icon: 'Flame',
         xpReward: 75,
     },
     STREAK_30: {
         id: 'streak_30',
         title: 'Dedicated Scholar',
         description: 'Maintain a 30-day study streak',
-        icon: '⭐',
+        icon: 'Star',
         xpReward: 250,
     },
     BOOKWORM: {
         id: 'bookworm',
         title: 'Bookworm',
         description: 'Read 10 notes',
-        icon: '📚',
+        icon: 'BookOpen',
         xpReward: 50,
     },
     SPEED_LEARNER: {
         id: 'speed_learner',
         title: 'Speed Learner',
         description: 'Complete 5 chapters in one week',
-        icon: '⚡',
+        icon: 'Zap',
         xpReward: 100,
     },
 };

@@ -91,7 +91,7 @@ export function Sidebar() {
             </nav>
 
             {/* Premium Card */}
-            <div className="px-4 pb-6">
+            {/* <div className="px-4 pb-6">
                 <div className="relative overflow-hidden rounded-lg bg-gray-900 p-5 text-white border-2 border-dashed border-primary-700 shadow-xl">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-accent-500/10 rounded-full -translate-y-8 translate-x-8 blur-2xl" />
 
@@ -108,7 +108,7 @@ export function Sidebar() {
                         </button>
                     </div>
                 </div>
-            </div>
+            </div> */}
 
             {/* User Section */}
             <div className="p-4 border-t-2 border-dashed border-gray-100">
