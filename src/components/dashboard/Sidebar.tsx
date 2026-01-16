@@ -18,6 +18,11 @@ import {
 import { cn } from '@/src/lib/utils';
 import { useAuth } from '@/src/lib/auth';
 
+interface SidebarProps {
+    className?: string;
+    onClose?: () => void;
+}
+
 const menuItems = [
     { name: 'Overview', icon: Home, href: '/dashboard' },
     { name: 'Videos', icon: Video, href: '/dashboard/videos' },
@@ -29,7 +34,7 @@ const menuItems = [
     { name: 'Analytics', icon: BarChart3, href: '/dashboard/analytics' },
 ];
 
-export function Sidebar() {
+export function Sidebar({ className, onClose }: SidebarProps) {
     const pathname = usePathname();
     const { user, logout } = useAuth();
 
@@ -39,16 +44,24 @@ export function Sidebar() {
     };
 
     return (
-        <aside className="flex flex-col w-64 h-screen bg-white border-r-2 border-dashed border-gray-200">
+        <aside className={cn("flex flex-col w-64 h-screen bg-white border-r-2 border-dashed border-gray-200", className)}>
             {/* Logo */}
-            <div className="flex items-center gap-2 px-8 h-20 border-b-2 border-dashed border-gray-100">
-                <div className="w-8 h-8 bg-accent-500 rounded-lg flex items-center justify-center text-white font-black text-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]">
-                    L
+            <div className="flex items-center justify-between px-8 h-20 border-b-2 border-dashed border-gray-100 shrink-0">
+                <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-accent-500 rounded-lg flex items-center justify-center text-white font-black text-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]">
+                        L
+                    </div>
+                    <div>
+                        <span className="text-lg font-black text-gray-900 tracking-tighter">Lit</span>
+                        <span className="text-lg font-black text-accent-500 tracking-tighter">Talks</span>
+                    </div>
                 </div>
-                <div>
-                    <span className="text-lg font-black text-gray-900 tracking-tighter">Lit</span>
-                    <span className="text-lg font-black text-accent-500 tracking-tighter">Talks</span>
-                </div>
+                {/* Close Button for Mobile */}
+                {onClose && (
+                    <button onClick={onClose} className="md:hidden text-gray-400 hover:text-gray-600">
+                        <ChevronRight className="w-6 h-6 rotate-180" />
+                    </button>
+                )}
             </div>
 
             {/* Navigation */}
@@ -62,6 +75,7 @@ export function Sidebar() {
                         <Link
                             key={item.name}
                             href={item.href}
+                            onClick={onClose}
                             className={cn(
                                 'flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group relative font-bold text-sm',
                                 isActive
