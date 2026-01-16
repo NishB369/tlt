@@ -22,7 +22,7 @@ export function ProgressRing({
     const offset = circumference - (percentage / 100) * circumference;
 
     return (
-        <div className="flex flex-col items-center text-center gap-3">
+        <div className="flex flex-col items-center text-center gap-3 w-full">
             <div className="relative" style={{ width: size, height: size }}>
                 {/* Background Circle */}
                 <svg className="w-full h-full -rotate-90">

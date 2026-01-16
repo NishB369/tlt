@@ -15,12 +15,12 @@ export default function DashboardPage() {
     const lastVideo = MOCK_VIDEOS[1]; // Simulating the last watched video
 
     return (
-        <div className="space-y-6 animate-fade-in p-2">
+        <div className="space-y-6 animate-fade-in p-2 md:p-0">
             {/* Welcome Card */}
             <WelcomeCard />
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
                 <StatsCard
                     title="Videos Watched"
                     value={stats.totalVideosWatched}
@@ -60,9 +60,9 @@ export default function DashboardPage() {
                 {/* Left Column - Progress & Continue Learning */}
                 <div className="lg:col-span-2 space-y-6">
                     {/* Progress Overview */}
-                    <div className="bg-white rounded-lg p-6 border-2 border-dashed border-gray-200">
-                        <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-8">Progress Overview</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                    <div className="bg-white rounded-lg p-5 md:p-6 border-2 border-dashed border-gray-200">
+                        <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-6 md:mb-8">Progress Overview</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-10">
                             <ProgressRing
                                 percentage={45}
                                 title="Pride and Prejudice"

@@ -5,7 +5,7 @@ import { DashboardNav } from '@/src/components/dashboard/DashboardNav';
 import { PomodoroTimer } from '@/src/components/shared/PomodoroTimer';
 import { useAuth } from '@/src/lib/auth';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 
 export default function DashboardLayout({
@@ -15,12 +15,18 @@ export default function DashboardLayout({
 }) {
     const { user, isLoading, isAuthenticated } = useAuth();
     const router = useRouter();
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     useEffect(() => {
         if (!isLoading && !isAuthenticated) {
             router.push('/login');
         }
     }, [isLoading, isAuthenticated, router]);
+
+    // Close mobile menu on route change
+    useEffect(() => {
+        setIsMobileMenuOpen(false);
+    }, [router]);
 
     if (isLoading) {
         return (
@@ -39,16 +45,31 @@ export default function DashboardLayout({
 
     return (
         <div className="flex h-screen bg-[#fefefe]">
-            {/* Sidebar */}
-            <Sidebar />
+            {/* Desktop Sidebar */}
+            <Sidebar className="hidden md:flex" />
+
+            {/* Mobile Sidebar Overlay */}
+            {isMobileMenuOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm animate-fade-in"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                />
+            )}
+
+            {/* Mobile Sidebar */}
+            <Sidebar
+                className={`fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 md:hidden ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+                    }`}
+                onClose={() => setIsMobileMenuOpen(false)}
+            />
 
             {/* Main Content Area */}
-            <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex-1 flex flex-col overflow-hidden w-full">
                 {/* Top Navigation */}
-                <DashboardNav />
+                <DashboardNav onMenuClick={() => setIsMobileMenuOpen(true)} />
 
                 {/* Page Content */}
-                <main className="flex-1 overflow-y-auto p-6">
+                <main className="flex-1 overflow-y-auto p-4 md:p-6 w-full">
                     {children}
                 </main>
             </div>

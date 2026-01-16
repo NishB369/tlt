@@ -2,46 +2,65 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Search, Bell, HelpCircle } from 'lucide-react';
+import { Search, Bell, HelpCircle, Menu } from 'lucide-react';
 import { useAuth } from '@/src/lib/auth';
 
-export function DashboardNav() {
+interface DashboardNavProps {
+    onMenuClick?: () => void;
+}
+
+export function DashboardNav({ onMenuClick }: DashboardNavProps) {
     const { user } = useAuth();
     const [showNotifications, setShowNotifications] = useState(false);
 
     return (
-        <header className="h-20 bg-white border-b-2 border-dashed border-gray-100 px-8 flex items-center justify-between">
-            {/* Search */}
-            <div className="flex-1 max-w-2xl">
-                <div className="relative group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-accent-500 transition-colors" />
-                    <input
-                        type="text"
-                        placeholder="Search for videos, notes, quizzes..."
-                        className="w-full pl-11 pr-4 py-2.5 bg-white hover:bg-gray-50 focus:bg-white text-sm text-gray-900 placeholder-gray-500 rounded-lg border-2 border-dashed border-gray-200 focus:border-accent-200 transition-all outline-none font-medium"
-                    />
+        <header className="h-16 md:h-20 bg-white border-b-2 border-dashed border-gray-100 px-4 md:px-8 flex items-center justify-between sticky top-0 z-30 transition-all">
+            <div className="flex items-center gap-2 md:gap-4">
+                {/* Mobile Menu Button - Only visible on mobile */}
+                <button
+                    onClick={onMenuClick}
+                    className="md:hidden p-2 text-gray-500 hover:bg-gray-50 rounded-lg active:scale-95 transition-transform"
+                >
+                    <Menu className="w-5 h-5" />
+                </button>
+
+                {/* Search Bar - Hidden on mobile, visible on desktop */}
+                <div className="hidden md:block w-96">
+                    <div className="relative group">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-accent-500 transition-colors" />
+                        <input
+                            type="text"
+                            placeholder="Search..."
+                            className="w-full pl-11 pr-4 py-2.5 bg-white hover:bg-gray-50 focus:bg-white text-sm text-gray-900 placeholder-gray-500 rounded-lg border-2 border-dashed border-gray-200 focus:border-accent-200 transition-all outline-none font-medium"
+                        />
+                    </div>
                 </div>
             </div>
 
             {/* Right Section */}
-            <div className="flex items-center gap-3 ml-8">
-                {/* Help */}
-                <button className="w-10 h-10 rounded-lg bg-white border-2 border-dashed border-gray-200 hover:border-gray-300 flex items-center justify-center transition-all group">
-                    <HelpCircle className="w-5 h-5 text-gray-400 group-hover:text-gray-600" />
+            <div className="flex items-center gap-2 md:gap-3">
+                {/* Mobile Search Icon */}
+                <button className="md:hidden w-9 h-9 rounded-lg bg-white border-2 border-dashed border-gray-200 flex items-center justify-center transition-all active:scale-95 text-gray-400">
+                    <Search className="w-4 h-4" />
+                </button>
+
+                {/* Help - Hidden on very small screens */}
+                <button className="hidden sm:flex w-9 h-9 md:w-10 md:h-10 rounded-lg bg-white border-2 border-dashed border-gray-200 hover:border-gray-300 items-center justify-center transition-all group active:scale-95">
+                    <HelpCircle className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-gray-600" />
                 </button>
 
                 {/* Notifications */}
                 <div className="relative">
                     <button
                         onClick={() => setShowNotifications(!showNotifications)}
-                        className="w-10 h-10 rounded-lg bg-white border-2 border-dashed border-gray-200 hover:border-accent-200 flex items-center justify-center transition-all group relative"
+                        className="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-white border-2 border-dashed border-gray-200 hover:border-accent-200 flex items-center justify-center transition-all group relative active:scale-95"
                     >
-                        <Bell className="w-5 h-5 text-gray-400 group-hover:text-accent-500" />
-                        <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-accent-500 rounded-full border-2 border-white shadow-sm" />
+                        <Bell className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-accent-500" />
+                        <span className="absolute top-1 right-1 w-2 h-2 md:w-2.5 md:h-2.5 bg-accent-500 rounded-full border-2 border-white shadow-sm" />
                     </button>
 
                     {showNotifications && (
-                        <div className="absolute right-0 mt-3 w-80 bg-white rounded-lg shadow-2xl border-2 border-dashed border-gray-200 py-2 z-50 animate-scale-in">
+                        <div className="absolute right-0 mt-3 w-72 md:w-80 bg-white rounded-lg shadow-2xl border-2 border-dashed border-gray-200 py-2 z-50 animate-scale-in origin-top-right">
                             <div className="px-4 py-3 border-b-2 border-dashed border-gray-100">
                                 <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">Notifications</h3>
                             </div>
@@ -58,7 +77,7 @@ export function DashboardNav() {
                 {/* User */}
                 <Link
                     href="/dashboard/profile"
-                    className="flex items-center gap-4 pl-4 ml-4 border-l-2 border-dashed border-gray-200 group cursor-pointer hover:bg-gray-50/50 transition-colors rounded-l-lg"
+                    className="flex items-center gap-3 pl-3 md:pl-4 ml-2 md:ml-4 border-l-2 border-dashed border-gray-200 group cursor-pointer hover:bg-gray-50/50 transition-colors rounded-l-lg"
                 >
                     <div className="text-right hidden sm:block">
                         <p className="text-sm font-black text-gray-900 leading-none mb-1 group-hover:text-accent-600 transition-colors">
@@ -76,7 +95,7 @@ export function DashboardNav() {
                     <img
                         src={user?.profilePicture || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex'}
                         alt="Profile"
-                        className="w-11 h-11 rounded-lg object-cover border-2 border-dashed border-gray-200 grayscale contrast-125 group-hover:grayscale-0 group-hover:border-accent-300 transition-all duration-300"
+                        className="w-9 h-9 md:w-11 md:h-11 rounded-lg object-cover border-2 border-dashed border-gray-200 grayscale contrast-125 group-hover:grayscale-0 group-hover:border-accent-300 transition-all duration-300"
                     />
                 </Link>
             </div>
