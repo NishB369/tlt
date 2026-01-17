@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 export const connectDB = async () => {
     try {
         const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/tlt_db';
-        await mongoose.connect(mongoURI, { family: 4 } as mongoose.ConnectOptions);
+        await mongoose.connect(mongoURI);
         console.log('MongoDB Connected');
     } catch (error) {
         console.error('MongoDB connection error:', error);
