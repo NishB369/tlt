@@ -5,22 +5,42 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { BookOpen, ArrowLeft, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useAuth } from '@/src/lib/auth';
+import { useGoogleLogin } from '@react-oauth/google';
+import apiClient from '@/src/lib/apiClient';
+import { useAuthStore } from '@/src/store/authStore';
 
 export default function LoginPage() {
     const router = useRouter();
-    const { login, isLoading } = useAuth();
+    // const { login, isLoading } = useAuth(); // We use store directly for login action to update state
+    const loginStore = useAuthStore(state => state.login);
     const [isSigningIn, setIsSigningIn] = useState(false);
 
-    const handleGoogleSignIn = async () => {
-        setIsSigningIn(true);
-        try {
-            await login();
-            router.push('/dashboard');
-        } catch (error) {
-            console.error('Sign in error:', error);
+    const login = useGoogleLogin({
+        onSuccess: async (tokenResponse) => {
+            setIsSigningIn(true);
+            try {
+                const userInfo = await apiClient.post('/auth/google', {
+                    token: tokenResponse.access_token,
+                    type: 'access_token' // signal to backend
+                });
+
+                loginStore(userInfo.data.user, userInfo.data.accessToken);
+                router.push('/dashboard');
+
+            } catch (error) {
+                console.error('Login failed', error);
+            } finally {
+                setIsSigningIn(false);
+            }
+        },
+        onError: () => {
+            console.error('Login Failed');
             setIsSigningIn(false);
         }
+    });
+
+    const handleGoogleSignIn = () => {
+        login();
     };
 
     return (
@@ -61,7 +81,7 @@ export default function LoginPage() {
                     {/* Google Sign In Button */}
                     <button
                         onClick={handleGoogleSignIn}
-                        disabled={isSigningIn || isLoading}
+                        disabled={isSigningIn}
                         className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-white border border-dashed border-gray-300 rounded hover:border-accent-500 hover:bg-gray-50 transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isSigningIn ? (

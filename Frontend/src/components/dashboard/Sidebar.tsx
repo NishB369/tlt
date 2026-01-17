@@ -130,11 +130,13 @@ export function Sidebar({ className, onClose }: SidebarProps) {
                     href="/dashboard/profile"
                     className="flex items-center gap-3 p-3 rounded-lg border-2 border-dashed border-gray-50 bg-gray-50/50 mb-4 hover:border-accent-200 hover:bg-white transition-all group"
                 >
-                    <img
-                        src={user?.profilePicture || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex'}
-                        alt="Profile"
-                        className="w-10 h-10 rounded-lg object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all"
-                    />
+                    <div className="w-10 h-10 rounded-full bg-gray-200 border border-dashed border-gray-300 overflow-hidden">
+                        <img
+                            src={user?.picture || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex'}
+                            alt="Profile"
+                            className="w-full h-full object-cover"
+                        />
+                    </div>
                     <div className="flex-1 min-w-0">
                         <p className="text-sm font-bold text-gray-900 truncate tracking-tight group-hover:text-accent-600 transition-colors">
                             {user?.name || 'Student'}

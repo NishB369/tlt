@@ -77,7 +77,7 @@ export function DashboardNav({ onMenuClick }: DashboardNavProps) {
                 {/* User */}
                 <Link
                     href="/dashboard/profile"
-                    className="flex items-center gap-3 md:pl-4 md:ml-4 border-2 md:border-l-2 border-dashed border-gray-200 group cursor-pointer hover:bg-gray-50/50 transition-colors rounded-lg md:rounded-l-lg"
+                    className="flex md:hidden items-center gap-3 border-2 sm:border-none border-dashed border-gray-200 group cursor-pointer hover:bg-gray-50/50 transition-colors rounded-lg md:rounded-l-lg"
                 >
                     <div className="text-right hidden sm:block">
                         <p className="text-sm font-black text-gray-900 leading-none mb-1 group-hover:text-accent-600 transition-colors">
@@ -92,11 +92,13 @@ export function DashboardNav({ onMenuClick }: DashboardNavProps) {
                             </span>
                         </div>
                     </div>
-                    <img
-                        src={user?.profilePicture || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex'}
-                        alt="Profile"
-                        className="w-8 h-8 md:w-11 md:h-11 rounded-lg object-cover border-2 border-dashed border-gray-200 grayscale contrast-125 group-hover:grayscale-0 group-hover:border-accent-300 transition-all duration-300"
-                    />
+                    <div className="w-8 h-8 rounded-full bg-gray-100 border-2 border-dashed border-gray-200 overflow-hidden group-hover:border-accent-500 transition-colors">
+                        <img
+                            src={user?.picture || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex'}
+                            alt="Profile"
+                            className="w-full h-full object-cover"
+                        />
+                    </div>
                 </Link>
             </div>
         </header>
