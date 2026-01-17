@@ -6,7 +6,6 @@ export interface ISummary extends Document {
     novel: mongoose.Types.ObjectId;
     chapter: string;
     relatedVideoId?: mongoose.Types.ObjectId;
-    keyPoints: string[];
     importantQuotes: Array<{ quote: string; context: string }>;
     characterMap?: string; // URL or JSON structure
     isPublished: boolean;
@@ -21,7 +20,6 @@ const summarySchema = new Schema<ISummary>(
         novel: { type: Schema.Types.ObjectId, ref: 'Novel', required: true },
         chapter: { type: String, required: true },
         relatedVideoId: { type: Schema.Types.ObjectId, ref: 'Video' },
-        keyPoints: [{ type: String }],
         importantQuotes: [
             {
                 quote: { type: String, required: true },
