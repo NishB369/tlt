@@ -1,100 +1,83 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User } from '@/src//types';
-
-// Mock user for development
-const MOCK_USER: User = {
-    id: 'user-1',
-    email: 'student@example.com',
-    name: 'Alex Johnson',
-    profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex',
-    createdAt: new Date('2024-01-01'),
-    lastLogin: new Date(),
-    studyStreak: 7,
-    totalStudyTime: 272,
-    level: 5,
-    xp: 850,
-    preferences: {
-        theme: 'light',
-        notificationsEnabled: true,
-    },
-};
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { User } from '@/src/types';
+import { useAuthStore } from '@/src/store/authStore';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import apiClient from './apiClient';
 
 interface AuthContextType {
     user: User | null;
     isLoading: boolean;
     isAuthenticated: boolean;
-    login: () => Promise<void>;
+    login: () => Promise<void>; // kept for compatibility, but login is now handled via Google Button
     logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<User | null>(null);
+    const { user, isAuthenticated, login: storeLogin, logout: storeLogout, setAccessToken } = useAuthStore();
     const [isLoading, setIsLoading] = useState(true);
 
+    // Initial Auth Check (Refresh Token)
     useEffect(() => {
-        // Check for existing session
         const checkAuth = async () => {
             try {
-                const storedUser = localStorage.getItem('lt_user');
-                if (storedUser) {
-                    setUser(JSON.parse(storedUser));
+                // If we don't have an access token, try to refresh
+                // This runs on mount to restore the session if possible
+                const res = await apiClient.post('/auth/refresh');
+                if (res.data.accessToken) {
+                    setAccessToken(res.data.accessToken);
+                    // Optionally fetch user profile here if needed, 
+                    // or rely on persisted user data if available/valid.
                 }
             } catch (error) {
-                console.error('Auth check failed:', error);
+                // If refresh fails and we thought we were authenticated, we should probably logout
+                // But typically 401 on refresh means we are definitely not logged in.
+                // If we have a persisted user but refresh fails, clear it.
+                if (isAuthenticated) {
+                    storeLogout();
+                }
             } finally {
                 setIsLoading(false);
             }
         };
 
         checkAuth();
-    }, []);
+    }, [setAccessToken, storeLogout]); // Removed isAuthenticated dependency to avoid loops, run once on mount
 
     const login = async () => {
-        setIsLoading(true);
-        try {
-            // Simulate OAuth delay
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-
-            // In production, this would be NextAuth signIn
-            setUser(MOCK_USER);
-            localStorage.setItem('lt_user', JSON.stringify(MOCK_USER));
-        } catch (error) {
-            console.error('Login failed:', error);
-            throw error;
-        } finally {
-            setIsLoading(false);
-        }
+        console.warn("Use Google Login Button instead");
     };
 
     const logout = async () => {
-        setIsLoading(true);
         try {
-            // In production, this would be NextAuth signOut
-            setUser(null);
-            localStorage.removeItem('lt_user');
+            await apiClient.post('/auth/logout');
+            storeLogout();
         } catch (error) {
-            console.error('Logout failed:', error);
-        } finally {
-            setIsLoading(false);
+            console.error('Logout failed', error);
+            storeLogout(); // Logout locally anyway
         }
     };
 
+    // Cast store User to app User type (might need better mapping in real app)
+    const appUser = user as unknown as User;
+
     return (
-        <AuthContext.Provider
-            value={{
-                user,
-                isLoading,
-                isAuthenticated: !!user,
-                login,
-                logout,
-            }}
-        >
-            {children}
-        </AuthContext.Provider>
+        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
+            <AuthContext.Provider
+                value={{
+                    user: appUser,
+                    isLoading,
+                    isAuthenticated,
+                    login,
+                    logout,
+                }}
+            >
+                {children}
+            </AuthContext.Provider>
+        </GoogleOAuthProvider>
     );
 }
 
