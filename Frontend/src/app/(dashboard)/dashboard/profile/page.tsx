@@ -1,7 +1,6 @@
 'use client';
 
 import { useAuth } from '@/src/lib/auth';
-import { MOCK_USER_STATS, ACHIEVEMENTS } from '@/src/lib/constants';
 import {
     User,
     Mail,
@@ -9,10 +8,7 @@ import {
     Award,
     Flame,
     Clock,
-    CheckCircle,
-    Bell,
     Shield,
-    Smartphone,
     LogOut,
     Camera
 } from 'lucide-react';
@@ -76,11 +72,13 @@ export default function ProfilePage() {
                         <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-gray-50 to-gray-100 border-b-2 border-dashed border-gray-200" />
 
                         <div className="relative mt-8 mb-4 inline-block">
-                            <img
-                                src={user?.profilePicture || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex'}
-                                alt="Profile"
-                                className="w-24 h-24 rounded-2xl object-cover border-4 border-white shadow-sm mx-auto bg-white"
-                            />
+                            <div className="w-24 h-24 rounded-full bg-gray-100 border-2 border-dashed border-gray-300 overflow-hidden mb-4 group-hover:border-accent-500 transition-colors">
+                                <img
+                                    src={user?.picture || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex'}
+                                    alt="Profile"
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
                             <button className="absolute bottom-0 right-0 p-1.5 bg-white rounded-lg border-2 border-dashed border-gray-200 text-gray-400 hover:text-accent-500 hover:border-accent-200 transition-all shadow-sm">
                                 <Camera className="w-4 h-4" />
                             </button>
