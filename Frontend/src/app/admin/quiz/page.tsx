@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
     Plus,
@@ -12,42 +12,47 @@ import {
     CheckCircle,
     HelpCircle
 } from 'lucide-react';
-
-const MOCK_QUIZZES = [
-    {
-        id: '1',
-        title: 'Chapter 1 Assessment',
-        novelTitle: 'Pride and Prejudice',
-        chapter: 'Chapter 1',
-        isPublished: true,
-        totalQuestions: 10,
-        passingScore: 70
-    },
-    {
-        id: '2',
-        title: 'Symbolism Quiz',
-        novelTitle: 'The Great Gatsby',
-        chapter: 'Chapter 3',
-        isPublished: false,
-        totalQuestions: 5,
-        passingScore: 80
-    },
-];
+import apiClient from '@/src/lib/apiClient';
 
 export default function AdminQuizPage() {
     const [viewMode, setViewMode] = useState<'list' | 'card'>('list');
     const [searchQuery, setSearchQuery] = useState('');
-    const [quizzes, setQuizzes] = useState(MOCK_QUIZZES);
+    const [quizzes, setQuizzes] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [showDeleteModal, setShowDeleteModal] = useState<string | null>(null);
 
+    useEffect(() => {
+        fetchQuizzes();
+    }, []);
+
+    const fetchQuizzes = async () => {
+        try {
+            setIsLoading(true);
+            const response = await apiClient.get('/quizzes');
+            setQuizzes(response.data.data.data);
+        } catch (error) {
+            console.error('Error fetching quizzes:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const filteredQuizzes = quizzes.filter(q =>
-        q.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        q.novelTitle.toLowerCase().includes(searchQuery.toLowerCase())
+        q.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    const handleDelete = (id: string) => {
-        setQuizzes(prev => prev.filter(q => q.id !== id));
-        setShowDeleteModal(null);
+    const handleDelete = async (id: string) => {
+        try {
+            await apiClient.delete(`/quizzes/${id}`);
+            await fetchQuizzes();
+            setShowDeleteModal(null);
+        } catch (error) {
+            console.error('Error deleting quiz:', error);
+        }
+    };
+
+    const getNovelTitle = (quiz: any) => {
+        return typeof quiz.novel === 'object' ? quiz.novel?.title : quiz.novel;
     };
 
     return (
@@ -122,18 +127,18 @@ export default function AdminQuizPage() {
                             </thead>
                             <tbody className="divide-y divide-gray-100">
                                 {filteredQuizzes.map((quiz) => (
-                                    <tr key={quiz.id} className="group hover:bg-gray-50 transition-colors">
+                                    <tr key={quiz._id || quiz.id} className="group hover:bg-gray-50 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="font-bold text-gray-900">{quiz.title}</div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="text-sm font-bold text-gray-700">{quiz.novelTitle}</div>
+                                            <div className="text-sm font-bold text-gray-700">{getNovelTitle(quiz)}</div>
                                             <div className="text-xs text-gray-500 font-medium">{quiz.chapter}</div>
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 <span className="text-xs font-bold text-gray-500 flex items-center gap-1">
-                                                    <HelpCircle className="w-3 h-3" /> {quiz.totalQuestions} Qs
+                                                    <HelpCircle className="w-3 h-3" /> {quiz.questions?.length || 0} Qs
                                                 </span>
                                                 <span className="text-xs font-bold text-gray-500 flex items-center gap-1">
                                                     <CheckCircle className="w-3 h-3" /> {quiz.passingScore}% Pass
@@ -149,13 +154,13 @@ export default function AdminQuizPage() {
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <Link
-                                                    href={`/admin/quiz/${quiz.id}`}
+                                                    href={`/admin/quiz/${quiz._id || quiz.id}`}
                                                     className="p-2 text-gray-400 hover:text-gray-900 hover:bg-white rounded-lg transition-all"
                                                 >
                                                     <Edit className="w-4 h-4" />
                                                 </Link>
                                                 <button
-                                                    onClick={() => setShowDeleteModal(quiz.id)}
+                                                    onClick={() => setShowDeleteModal(quiz._id || quiz.id)}
                                                     className="p-2 text-gray-400 hover:text-red-600 hover:bg-white rounded-lg transition-all"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
@@ -171,7 +176,7 @@ export default function AdminQuizPage() {
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredQuizzes.map((quiz) => (
-                        <div key={quiz.id} className="group relative bg-white rounded-xl border-2 border-dashed border-gray-200 overflow-hidden hover:border-gray-400 transition-all hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] p-6 space-y-4">
+                        <div key={quiz._id || quiz.id} className="group relative bg-white rounded-xl border-2 border-dashed border-gray-200 overflow-hidden hover:border-gray-400 transition-all hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] p-6 space-y-4">
                             <div className="flex items-start justify-between">
                                 <div className="p-3 bg-gray-50 rounded-xl">
                                     <CheckCircle className="w-6 h-6 text-gray-400" />
@@ -183,24 +188,24 @@ export default function AdminQuizPage() {
 
                             <div>
                                 <h3 className="font-bold text-gray-900 leading-tight mb-1">{quiz.title}</h3>
-                                <p className="text-xs font-bold text-gray-500">{quiz.novelTitle} • {quiz.chapter}</p>
+                                <p className="text-xs font-bold text-gray-500">{getNovelTitle(quiz)} • {quiz.chapter}</p>
                             </div>
 
                             <div className="pt-4 border-t border-dashed border-gray-100 flex items-center justify-between text-xs font-bold text-gray-500">
-                                <span>{quiz.totalQuestions} Questions</span>
+                                <span>{quiz.questions?.length || 0} Questions</span>
                                 <span>{quiz.passingScore}% to Pass</span>
                             </div>
 
                             {/* Overlay Actions */}
                             <div className="absolute inset-0 bg-white/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 backdrop-blur-[1px]">
                                 <Link
-                                    href={`/admin/quiz/${quiz.id}`}
+                                    href={`/admin/quiz/${quiz._id || quiz.id}`}
                                     className="p-3 bg-white rounded-full text-gray-900 hover:scale-110 transition-transform shadow-lg border border-gray-100"
                                 >
                                     <Edit className="w-5 h-5" />
                                 </Link>
                                 <button
-                                    onClick={() => setShowDeleteModal(quiz.id)}
+                                    onClick={() => setShowDeleteModal(quiz._id || quiz.id)}
                                     className="p-3 bg-white rounded-full text-red-500 hover:scale-110 transition-transform shadow-lg border border-gray-100"
                                 >
                                     <Trash2 className="w-5 h-5" />

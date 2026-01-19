@@ -160,10 +160,10 @@ export interface Achievement {
 // Novel Types
 export interface Novel {
   id: string;
+  _id?: string;
   title: string;
   author: string;
   description: string;
-  coverImage: string;
   totalChapters: number;
   tags: string[];
   difficulty: 'beginner' | 'intermediate' | 'advanced';

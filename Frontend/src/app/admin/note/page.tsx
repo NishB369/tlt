@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
     Plus,
@@ -12,42 +12,47 @@ import {
     FileText,
     BookOpen
 } from 'lucide-react';
-
-const MOCK_NOTES = [
-    {
-        id: '1',
-        title: 'Symbolism of the Green Light',
-        novelTitle: 'The Great Gatsby',
-        chapter: 'Chapter 1',
-        isPublished: true,
-        type: 'Symbolism',
-        importance: 'High'
-    },
-    {
-        id: '2',
-        title: 'Character Analysis: Mrs. Bennett',
-        novelTitle: 'Pride and Prejudice',
-        chapter: 'Chapter 2',
-        isPublished: true,
-        type: 'Character',
-        importance: 'Medium'
-    },
-];
+import apiClient from '@/src/lib/apiClient';
 
 export default function AdminNotesPage() {
     const [viewMode, setViewMode] = useState<'list' | 'card'>('list');
     const [searchQuery, setSearchQuery] = useState('');
-    const [notes, setNotes] = useState(MOCK_NOTES);
+    const [notes, setNotes] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [showDeleteModal, setShowDeleteModal] = useState<string | null>(null);
 
+    useEffect(() => {
+        fetchNotes();
+    }, []);
+
+    const fetchNotes = async () => {
+        try {
+            setIsLoading(true);
+            const response = await apiClient.get('/notes');
+            setNotes(response.data.data.data);
+        } catch (error) {
+            console.error('Error fetching notes:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const filteredNotes = notes.filter(n =>
-        n.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        n.novelTitle.toLowerCase().includes(searchQuery.toLowerCase())
+        n.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    const handleDelete = (id: string) => {
-        setNotes(prev => prev.filter(n => n.id !== id));
-        setShowDeleteModal(null);
+    const handleDelete = async (id: string) => {
+        try {
+            await apiClient.delete(`/notes/${id}`);
+            await fetchNotes();
+            setShowDeleteModal(null);
+        } catch (error) {
+            console.error('Error deleting note:', error);
+        }
+    };
+
+    const getNovelTitle = (note: any) => {
+        return typeof note.novel === 'object' ? note.novel?.title : note.novel;
     };
 
     return (
@@ -122,21 +127,20 @@ export default function AdminNotesPage() {
                             </thead>
                             <tbody className="divide-y divide-gray-100">
                                 {filteredNotes.map((note) => (
-                                    <tr key={note.id} className="group hover:bg-gray-50 transition-colors">
+                                    <tr key={note._id || note.id} className="group hover:bg-gray-50 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="font-bold text-gray-900">{note.title}</div>
-                                            <div className="text-xs text-blue-600 font-bold bg-blue-50 inline-block px-1.5 py-0.5 rounded mt-1">{note.type}</div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="text-sm font-bold text-gray-700">{note.novelTitle}</div>
+                                            <div className="text-sm font-bold text-gray-700">{getNovelTitle(note)}</div>
                                             <div className="text-xs text-gray-500 font-medium">{note.chapter}</div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full ${note.importance === 'High' ? 'bg-red-50 text-red-600 ring-1 ring-red-100' :
-                                                    note.importance === 'Medium' ? 'bg-yellow-50 text-yellow-600 ring-1 ring-yellow-100' : 'bg-gray-100 text-gray-600'
-                                                }`}>
-                                                {note.importance}
-                                            </span>
+                                            <div className="flex flex-wrap gap-1">
+                                                {note.tags?.map((tag: string, i: number) => (
+                                                    <span key={i} className="text-[10px] font-bold bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">{tag}</span>
+                                                ))}
+                                            </div>
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border ${note.isPublished ? 'bg-green-50 text-green-700 border-green-200' : 'bg-gray-100 text-gray-600 border-gray-200'}`}>
@@ -147,13 +151,13 @@ export default function AdminNotesPage() {
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <Link
-                                                    href={`/admin/note/${note.id}`}
+                                                    href={`/admin/note/${note._id || note.id}`}
                                                     className="p-2 text-gray-400 hover:text-gray-900 hover:bg-white rounded-lg transition-all"
                                                 >
                                                     <Edit className="w-4 h-4" />
                                                 </Link>
                                                 <button
-                                                    onClick={() => setShowDeleteModal(note.id)}
+                                                    onClick={() => setShowDeleteModal(note._id || note.id)}
                                                     className="p-2 text-gray-400 hover:text-red-600 hover:bg-white rounded-lg transition-all"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
@@ -169,7 +173,7 @@ export default function AdminNotesPage() {
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredNotes.map((note) => (
-                        <div key={note.id} className="group relative bg-white rounded-xl border-2 border-dashed border-gray-200 overflow-hidden hover:border-gray-400 transition-all hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] p-6 space-y-4">
+                        <div key={note._id || note.id} className="group relative bg-white rounded-xl border-2 border-dashed border-gray-200 overflow-hidden hover:border-gray-400 transition-all hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] p-6 space-y-4">
                             <div className="flex items-start justify-between">
                                 <div className="p-3 bg-gray-50 rounded-xl">
                                     <FileText className="w-6 h-6 text-gray-400" />
@@ -182,28 +186,27 @@ export default function AdminNotesPage() {
                             <div>
                                 <h3 className="font-bold text-gray-900 leading-tight mb-1">{note.title}</h3>
                                 <div className="flex flex-wrap gap-2 mt-2">
-                                    <p className="text-xs font-bold text-gray-500">{note.novelTitle} • {note.chapter}</p>
-                                    <span className="text-[10px] font-bold bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">{note.type}</span>
+                                    <p className="text-xs font-bold text-gray-500">{getNovelTitle(note)} • {note.chapter}</p>
+                                    {note.tags?.slice(0, 2).map((tag: string, i: number) => (
+                                        <span key={i} className="text-[10px] font-bold bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">{tag}</span>
+                                    ))}
                                 </div>
                             </div>
 
                             <div className="pt-4 border-t border-dashed border-gray-100">
-                                <span className={`text-[10px] font-bold uppercase tracking-wider ${note.importance === 'High' ? 'text-red-500' : 'text-gray-400'
-                                    }`}>
-                                    {note.importance} Priority
-                                </span>
+                                {/* Removed 'Importance' since not in model, using tags effectively covers this */}
                             </div>
 
                             {/* Overlay Actions */}
                             <div className="absolute inset-0 bg-white/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 backdrop-blur-[1px]">
                                 <Link
-                                    href={`/admin/note/${note.id}`}
+                                    href={`/admin/note/${note._id || note.id}`}
                                     className="p-3 bg-white rounded-full text-gray-900 hover:scale-110 transition-transform shadow-lg border border-gray-100"
                                 >
                                     <Edit className="w-5 h-5" />
                                 </Link>
                                 <button
-                                    onClick={() => setShowDeleteModal(note.id)}
+                                    onClick={() => setShowDeleteModal(note._id || note.id)}
                                     className="p-3 bg-white rounded-full text-red-500 hover:scale-110 transition-transform shadow-lg border border-gray-100"
                                 >
                                     <Trash2 className="w-5 h-5" />

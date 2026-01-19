@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Save } from 'lucide-react';
 import { NOVEL_TAGS, DIFFICULTY_LEVELS } from '@/src/lib/constants/novels';
+import apiClient from '@/src/lib/apiClient';
 
 interface NovelFormProps {
     initialData?: any;
@@ -50,14 +51,26 @@ export function NovelForm({ initialData, isEditing = false }: NovelFormProps) {
         e.preventDefault();
         setIsLoading(true);
 
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        try {
+            const novelId = initialData?._id || initialData?.id;
 
-        console.log('Submitting Form Data:', formData);
+            // Clean payload
+            const payload = { ...formData };
+            ['_id', 'id', '__v', 'createdAt', 'updatedAt'].forEach(el => delete (payload as any)[el]);
 
-        // Return to list after save
-        setIsLoading(false);
-        router.push('/admin/novels');
+            if (isEditing && novelId) {
+                await apiClient.put(`/novels/${novelId}`, payload);
+            } else {
+                await apiClient.post('/novels', payload);
+            }
+            router.push('/admin/novels');
+        } catch (error: any) {
+            console.error('Error saving novel:', error);
+            const message = error.response?.data?.message || 'Failed to save novel. Please try again.';
+            alert(message);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -139,6 +152,8 @@ export function NovelForm({ initialData, isEditing = false }: NovelFormProps) {
                             />
                         </div>
                     </div>
+
+
 
                     <div className="space-y-2">
                         <label className="text-xs font-black uppercase text-gray-400 tracking-wider">Description</label>

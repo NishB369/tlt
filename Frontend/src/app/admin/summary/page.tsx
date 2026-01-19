@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
     Plus,
@@ -12,40 +12,49 @@ import {
     FileText,
     BookOpen
 } from 'lucide-react';
-
-const MOCK_SUMMARIES = [
-    {
-        id: '1',
-        title: 'Complete Analysis',
-        novelTitle: 'Pride and Prejudice',
-        chapter: 'Chapter 1',
-        isPublished: true,
-        preview: 'It is a truth universally acknowledged...',
-    },
-    {
-        id: '2',
-        title: 'Symbolism Overview',
-        novelTitle: 'The Great Gatsby',
-        chapter: 'Chapter 3',
-        isPublished: false,
-        preview: 'The green light represents...',
-    },
-];
+import apiClient from '@/src/lib/apiClient';
+import { Summary } from '@/src/types';
 
 export default function AdminSummariesPage() {
     const [viewMode, setViewMode] = useState<'list' | 'card'>('list');
     const [searchQuery, setSearchQuery] = useState('');
-    const [summaries, setSummaries] = useState(MOCK_SUMMARIES);
+    const [summaries, setSummaries] = useState<any[]>([]); // Using any for now as Summary type might need updates for populate
+    const [isLoading, setIsLoading] = useState(true);
     const [showDeleteModal, setShowDeleteModal] = useState<string | null>(null);
 
+    useEffect(() => {
+        fetchSummaries();
+    }, []);
+
+    const fetchSummaries = async () => {
+        try {
+            setIsLoading(true);
+            const response = await apiClient.get('/summaries');
+            setSummaries(response.data.data.data);
+        } catch (error) {
+            console.error('Error fetching summaries:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const filteredSummaries = summaries.filter(s =>
-        s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.novelTitle.toLowerCase().includes(searchQuery.toLowerCase())
+        s.title.toLowerCase().includes(searchQuery.toLowerCase())
+        // Note: s.novel might be populated or an ID. s.novel.title needed if populated
     );
 
-    const handleDelete = (id: string) => {
-        setSummaries(prev => prev.filter(s => s.id !== id));
-        setShowDeleteModal(null);
+    const handleDelete = async (id: string) => {
+        try {
+            await apiClient.delete(`/summaries/${id}`);
+            await fetchSummaries();
+            setShowDeleteModal(null);
+        } catch (error) {
+            console.error('Error deleting summary:', error);
+        }
+    };
+
+    const getNovelTitle = (summary: any) => {
+        return typeof summary.novel === 'object' ? summary.novel?.title : summary.novel;
     };
 
     return (
@@ -119,12 +128,12 @@ export default function AdminSummariesPage() {
                             </thead>
                             <tbody className="divide-y divide-gray-100">
                                 {filteredSummaries.map((summary) => (
-                                    <tr key={summary.id} className="group hover:bg-gray-50 transition-colors">
+                                    <tr key={summary.id || summary._id} className="group hover:bg-gray-50 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="font-bold text-gray-900">{summary.title}</div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="text-sm font-bold text-gray-700">{summary.novelTitle}</div>
+                                            <div className="text-sm font-bold text-gray-700">{getNovelTitle(summary)}</div>
                                             <div className="text-xs text-gray-500 font-medium">{summary.chapter}</div>
                                         </td>
                                         <td className="px-6 py-4">
@@ -136,13 +145,13 @@ export default function AdminSummariesPage() {
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
                                                 <Link
-                                                    href={`/admin/summary/${summary.id}`}
+                                                    href={`/admin/summary/${summary._id || summary.id}`}
                                                     className="p-2 text-gray-400 hover:text-gray-900 hover:bg-white rounded-lg transition-all"
                                                 >
                                                     <Edit className="w-4 h-4" />
                                                 </Link>
                                                 <button
-                                                    onClick={() => setShowDeleteModal(summary.id)}
+                                                    onClick={() => setShowDeleteModal(summary._id || summary.id)}
                                                     className="p-2 text-gray-400 hover:text-red-600 hover:bg-white rounded-lg transition-all"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
@@ -158,7 +167,7 @@ export default function AdminSummariesPage() {
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredSummaries.map((summary) => (
-                        <div key={summary.id} className="group relative bg-white rounded-xl border-2 border-dashed border-gray-200 overflow-hidden hover:border-gray-400 transition-all hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] p-6 space-y-4">
+                        <div key={summary._id || summary.id} className="group relative bg-white rounded-xl border-2 border-dashed border-gray-200 overflow-hidden hover:border-gray-400 transition-all hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] p-6 space-y-4">
                             <div className="flex items-start justify-between">
                                 <div className="p-3 bg-gray-50 rounded-xl">
                                     <FileText className="w-6 h-6 text-gray-400" />
@@ -170,19 +179,19 @@ export default function AdminSummariesPage() {
 
                             <div>
                                 <h3 className="font-bold text-gray-900 leading-tight mb-1">{summary.title}</h3>
-                                <p className="text-xs font-bold text-gray-500">{summary.novelTitle} • {summary.chapter}</p>
+                                <p className="text-xs font-bold text-gray-500">{getNovelTitle(summary)} • {summary.chapter}</p>
                             </div>
 
                             {/* Overlay Actions */}
                             <div className="absolute inset-0 bg-white/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 backdrop-blur-[1px]">
                                 <Link
-                                    href={`/admin/summary/${summary.id}`}
+                                    href={`/admin/summary/${summary._id || summary.id}`}
                                     className="p-3 bg-white rounded-full text-gray-900 hover:scale-110 transition-transform shadow-lg border border-gray-100"
                                 >
                                     <Edit className="w-5 h-5" />
                                 </Link>
                                 <button
-                                    onClick={() => setShowDeleteModal(summary.id)}
+                                    onClick={() => setShowDeleteModal(summary._id || summary.id)}
                                     className="p-3 bg-white rounded-full text-red-500 hover:scale-110 transition-transform shadow-lg border border-gray-100"
                                 >
                                     <Trash2 className="w-5 h-5" />

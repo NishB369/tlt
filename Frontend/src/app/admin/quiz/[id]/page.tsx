@@ -1,31 +1,39 @@
 'use client';
 
-import { use } from 'react';
+import { useState, useEffect, use } from 'react';
+import { notFound } from 'next/navigation';
 import { QuizForm } from '@/src/components/admin/quiz/QuizForm';
+import apiClient from '@/src/lib/apiClient';
 
 export default function EditQuizPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
+    const [quiz, setQuiz] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
 
-    // Mock Data mimicking a fetched quiz
-    const mockData = {
-        title: 'Chapter 1 Assessment',
-        description: 'Test your knowledge of the opening chapter.',
-        novel: '1', // Pride and Prejudice
-        chapter: 'Chapter 1',
-        timeLimit: 15,
-        passingScore: 70,
-        isPublished: true,
-        questions: [
-            {
-                question: 'Who is the first person to speak in the novel?',
-                type: 'mcq',
-                options: ['Mr. Bennet', 'Mrs. Bennet', 'Elizabeth', 'Mary'],
-                correctAnswer: 'Mrs. Bennet',
-                explanation: 'Mrs. Bennet opens the novel by telling her husband about the new tenant.',
-                points: 1
+    useEffect(() => {
+        const fetchQuiz = async () => {
+            try {
+                const response = await apiClient.get(`/quizzes/${id}`);
+                setQuiz(response.data.data.data);
+            } catch (error) {
+                console.error('Error fetching quiz:', error);
+                setQuiz(null);
+            } finally {
+                setLoading(false);
             }
-        ]
-    };
+        };
+        fetchQuiz();
+    }, [id]);
 
-    return <QuizForm initialData={mockData} isEditing={true} />;
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <div className="w-8 h-8 border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin" />
+            </div>
+        );
+    }
+
+    if (!quiz) return notFound();
+
+    return <QuizForm initialData={quiz} isEditing={true} />;
 }
