@@ -64,8 +64,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Cast store User to app User type (might need better mapping in real app)
     const appUser = user as unknown as User;
 
+    // Detect environment and select appropriate client ID
+    const GOOGLE_CLIENT_ID = process.env.NODE_ENV === 'production'
+        ? (process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID_PROD || process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID)
+        : process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
     return (
-        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
+        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID || ''}>
             <AuthContext.Provider
                 value={{
                     user: appUser,
