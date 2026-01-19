@@ -3,13 +3,14 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Save, Plus, Trash2, CheckCircle, HelpCircle, AlertCircle } from 'lucide-react';
+import apiClient from '@/src/lib/apiClient';
 
-// Mock Data for Dropdowns
-const MOCK_NOVELS = [
-    { id: '1', title: 'Pride and Prejudice', totalChapters: 61 },
-    { id: '2', title: 'The Great Gatsby', totalChapters: 9 },
-    { id: '3', title: '1984', totalChapters: 24 },
-];
+interface Novel {
+    id: string;
+    _id: string;
+    title: string;
+    totalChapters: number;
+}
 
 interface Question {
     question: string;
@@ -28,12 +29,18 @@ interface QuizFormProps {
 export function QuizForm({ initialData, isEditing = false }: QuizFormProps) {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
+    const [novels, setNovels] = useState<Novel[]>([]);
 
     // Form State
+    const getInitialNovelId = () => {
+        if (!initialData?.novel) return '';
+        return typeof initialData.novel === 'object' ? (initialData.novel._id || initialData.novel.id) : initialData.novel;
+    };
+
     const [formData, setFormData] = useState({
         title: initialData?.title || '',
         description: initialData?.description || '',
-        novelId: initialData?.novel || '',
+        novelId: getInitialNovelId(),
         chapter: initialData?.chapter || '',
         timeLimit: initialData?.timeLimit || 15,
         passingScore: initialData?.passingScore || 70,
@@ -43,9 +50,23 @@ export function QuizForm({ initialData, isEditing = false }: QuizFormProps) {
 
     const [availableChapters, setAvailableChapters] = useState<string[]>([]);
 
+    // Fetch Novels
     useEffect(() => {
-        if (formData.novelId) {
-            const selectedNovel = MOCK_NOVELS.find(n => n.id === formData.novelId);
+        const fetchNovels = async () => {
+            try {
+                const response = await apiClient.get('/novels');
+                setNovels(response.data.data.data);
+            } catch (error) {
+                console.error("Failed to fetch novels", error);
+            }
+        };
+        fetchNovels();
+    }, []);
+
+    // Update available chapters when novel selection changes
+    useEffect(() => {
+        if (formData.novelId && novels.length > 0) {
+            const selectedNovel = novels.find(n => (n._id === formData.novelId || n.id === formData.novelId));
             if (selectedNovel) {
                 const chapters = Array.from({ length: selectedNovel.totalChapters }, (_, i) => `Chapter ${i + 1}`);
                 setAvailableChapters(chapters);
@@ -55,7 +76,7 @@ export function QuizForm({ initialData, isEditing = false }: QuizFormProps) {
         } else {
             setAvailableChapters([]);
         }
-    }, [formData.novelId]);
+    }, [formData.novelId, novels]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -125,11 +146,30 @@ export function QuizForm({ initialData, isEditing = false }: QuizFormProps) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        console.log('Submitting Quiz Data:', formData);
-        setIsLoading(false);
-        router.push('/admin/quiz');
+
+        const { novelId, ...rest } = formData;
+        const payload = {
+            ...rest,
+            novel: novelId,
+            timeLimit: Number(formData.timeLimit),
+            passingScore: Number(formData.passingScore)
+        };
+
+        try {
+            const quizId = initialData?._id || initialData?.id;
+            if (isEditing && quizId) {
+                await apiClient.put(`/quizzes/${quizId}`, payload);
+            } else {
+                await apiClient.post('/quizzes', payload);
+            }
+            router.push('/admin/quiz');
+        } catch (error: any) {
+            console.error('Error saving quiz:', error);
+            const message = error.response?.data?.message || 'Failed to save quiz.';
+            alert(message);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -227,8 +267,8 @@ export function QuizForm({ initialData, isEditing = false }: QuizFormProps) {
                                         required
                                     >
                                         <option value="">Select Novel</option>
-                                        {MOCK_NOVELS.map(novel => (
-                                            <option key={novel.id} value={novel.id}>{novel.title}</option>
+                                        {novels.map(novel => (
+                                            <option key={novel._id || novel.id} value={novel._id || novel.id}>{novel.title}</option>
                                         ))}
                                     </select>
                                 </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
     Plus,
@@ -14,45 +14,47 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-// Mock Data
-const MOCK_VIDEOS = [
-    {
-        id: '1',
-        title: 'Chapter 1 Analysis',
-        novelTitle: 'Pride and Prejudice',
-        chapter: 'Chapter 1',
-        youtubeId: 'dQw4w9WgXcQ',
-        duration: 320, // seconds
-        isPublished: true,
-        thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg'
-    },
-    {
-        id: '2',
-        title: 'Themes and Motifs',
-        novelTitle: 'The Great Gatsby',
-        chapter: 'Chapter 3',
-        youtubeId: 'dQw4w9WgXcQ',
-        duration: 480,
-        isPublished: false,
-        thumbnail: ''
-    },
-];
+import apiClient from '@/src/lib/apiClient';
+import { Video as VideoType } from '@/src/types';
 
 export default function AdminVideosPage() {
     const router = useRouter();
     const [viewMode, setViewMode] = useState<'list' | 'card'>('list');
     const [searchQuery, setSearchQuery] = useState('');
-    const [videos, setVideos] = useState(MOCK_VIDEOS);
+    const [videos, setVideos] = useState<VideoType[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [showDeleteModal, setShowDeleteModal] = useState<string | null>(null);
 
+    useEffect(() => {
+        fetchVideos();
+    }, []);
+
+    const fetchVideos = async () => {
+        try {
+            setIsLoading(true);
+            const response = await apiClient.get('/videos');
+            // Assuming the standard response structure
+            setVideos(response.data.data.data);
+        } catch (error) {
+            console.error('Error fetching videos:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const filteredVideos = videos.filter(video =>
-        video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        video.novelTitle.toLowerCase().includes(searchQuery.toLowerCase())
+        video.title.toLowerCase().includes(searchQuery.toLowerCase())
+        // Note: 'novelTitle' might need to be populated from backend or handled differently if only ID is present
     );
 
-    const handleDelete = (id: string) => {
-        setVideos(prev => prev.filter(v => v.id !== id));
-        setShowDeleteModal(null);
+    const handleDelete = async (id: string) => {
+        try {
+            await apiClient.delete(`/videos/${id}`);
+            await fetchVideos();
+            setShowDeleteModal(null);
+        } catch (error) {
+            console.error('Error deleting video:', error);
+        }
     };
 
     const formatDuration = (seconds: number) => {
@@ -139,8 +141,8 @@ export default function AdminVideosPage() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
-                                {filteredVideos.map((video) => (
-                                    <tr key={video.id} className="group hover:bg-gray-50 transition-colors">
+                                {filteredVideos.map((video: any) => (
+                                    <tr key={video._id || video.id} className="group hover:bg-gray-50 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="w-16 h-10 bg-gray-100 rounded-lg overflow-hidden relative border border-gray-200">
                                                 {video.thumbnail ? (
@@ -157,7 +159,10 @@ export default function AdminVideosPage() {
                                             <div className="text-xs text-gray-400 font-mono mt-0.5">{formatDuration(video.duration)}</div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="font-bold text-gray-700 text-sm">{video.novelTitle}</div>
+                                            <div className="font-bold text-gray-700 text-sm">
+                                                {/* If novel is populated, access title, otherwise it might be just ID */}
+                                                {typeof video.novel === 'object' ? video.novel?.title : video.novel}
+                                            </div>
                                             <div className="text-xs text-gray-500 font-medium">{video.chapter}</div>
                                         </td>
                                         <td className="px-6 py-4">
@@ -172,13 +177,13 @@ export default function AdminVideosPage() {
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <Link
-                                                    href={`/admin/videos/${video.id}`}
+                                                    href={`/admin/videos/${video._id || video.id}`}
                                                     className="p-2 text-gray-400 hover:text-gray-900 hover:bg-white rounded-lg transition-all"
                                                 >
                                                     <Edit className="w-4 h-4" />
                                                 </Link>
                                                 <button
-                                                    onClick={() => setShowDeleteModal(video.id)}
+                                                    onClick={() => setShowDeleteModal(video._id || video.id)}
                                                     className="p-2 text-gray-400 hover:text-red-600 hover:bg-white rounded-lg transition-all"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
@@ -194,8 +199,8 @@ export default function AdminVideosPage() {
             ) : (
                 // Card View
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {filteredVideos.map((video) => (
-                        <div key={video.id} className="group relative bg-white rounded-xl border-2 border-dashed border-gray-200 overflow-hidden hover:border-gray-400 transition-all hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)]">
+                    {filteredVideos.map((video: any) => (
+                        <div key={video._id || video.id} className="group relative bg-white rounded-xl border-2 border-dashed border-gray-200 overflow-hidden hover:border-gray-400 transition-all hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)]">
                             <div className="aspect-video bg-gray-100 relative overflow-hidden group-hover:bg-gray-200 transition-colors">
                                 {video.thumbnail ? (
                                     <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover" />
@@ -212,13 +217,13 @@ export default function AdminVideosPage() {
                                 {/* Overlay Actions */}
                                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 backdrop-blur-[1px]">
                                     <Link
-                                        href={`/admin/videos/${video.id}`}
+                                        href={`/admin/videos/${video._id || video.id}`}
                                         className="p-3 bg-white rounded-full text-gray-900 hover:scale-110 transition-transform shadow-lg"
                                     >
                                         <Edit className="w-5 h-5" />
                                     </Link>
                                     <button
-                                        onClick={() => setShowDeleteModal(video.id)}
+                                        onClick={() => setShowDeleteModal(video._id || video.id)}
                                         className="p-3 bg-white rounded-full text-red-500 hover:scale-110 transition-transform shadow-lg"
                                     >
                                         <Trash2 className="w-5 h-5" />
@@ -227,7 +232,9 @@ export default function AdminVideosPage() {
                             </div>
                             <div className="p-4 bg-white border-t-2 border-dashed border-gray-100">
                                 <h3 className="font-bold text-gray-900 truncate mb-1" title={video.title}>{video.title}</h3>
-                                <p className="text-xs font-bold text-gray-500 mb-2 truncate">{video.novelTitle} • {video.chapter}</p>
+                                <p className="text-xs font-bold text-gray-500 mb-2 truncate">
+                                    {typeof video.novel === 'object' ? video.novel?.title : video.novel} • {video.chapter}
+                                </p>
                                 <div className="flex items-center justify-between">
                                     <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider ${video.isPublished ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
                                         {video.isPublished ? 'Live' : 'Draft'}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
     Plus,
@@ -13,43 +13,48 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-// Mock Data
-const MOCK_NOVELS = [
-    {
-        id: '1',
-        title: 'Pride and Prejudice',
-        author: 'Jane Austen',
-        chapters: 61,
-        isPublished: true,
-        updatedAt: '2024-03-15',
-    },
-    {
-        id: '2',
-        title: 'The Great Gatsby',
-        author: 'F. Scott Fitzgerald',
-        chapters: 9,
-        isPublished: false,
-        updatedAt: '2024-03-10',
-    },
-    // Add more mock data if needed for testing scrol
-];
+import apiClient from '@/src/lib/apiClient';
+import { Novel } from '@/src/types';
 
 export default function AdminNovelsPage() {
     const router = useRouter();
     const [viewMode, setViewMode] = useState<'list' | 'card'>('list');
     const [searchQuery, setSearchQuery] = useState('');
-    const [novels, setNovels] = useState(MOCK_NOVELS);
+    const [novels, setNovels] = useState<Novel[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [showDeleteModal, setShowDeleteModal] = useState<string | null>(null);
+
+    useEffect(() => {
+        fetchNovels();
+    }, []);
+
+    const fetchNovels = async () => {
+        try {
+            setIsLoading(true);
+            const response = await apiClient.get('/novels');
+            // Assuming response structure is { status: 'success', results: X, data: { data: [] } }
+            setNovels(response.data.data.data);
+        } catch (error) {
+            console.error('Error fetching novels:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const filteredNovels = novels.filter(novel =>
         novel.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         novel.author.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    const handleDelete = (id: string) => {
-        // API call to delete will go here
-        setNovels(prev => prev.filter(n => n.id !== id));
-        setShowDeleteModal(null);
+    const handleDelete = async (id: string) => {
+        try {
+            await apiClient.delete(`/novels/${id}`);
+            // Reload the list to ensure accurate data
+            await fetchNovels();
+            setShowDeleteModal(null);
+        } catch (error) {
+            console.error('Error deleting novel:', error);
+        }
     };
 
     return (
@@ -131,7 +136,7 @@ export default function AdminNovelsPage() {
                             </thead>
                             <tbody className="divide-y divide-gray-100">
                                 {filteredNovels.map((novel) => (
-                                    <tr key={novel.id} className="group hover:bg-gray-50 transition-colors">
+                                    <tr key={novel._id || novel.id} className="group hover:bg-gray-50 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
                                                 <BookOpen className="w-5 h-5" />
@@ -151,18 +156,18 @@ export default function AdminNovelsPage() {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 font-bold text-gray-600">
-                                            {novel.chapters}
+                                            {novel.totalChapters}
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
                                                 <Link
-                                                    href={`/admin/novels/${novel.id}`}
+                                                    href={`/admin/novels/${novel._id || novel.id}`}
                                                     className="p-2 text-gray-400 hover:text-gray-900 hover:bg-white rounded-lg transition-all"
                                                 >
                                                     <Edit className="w-4 h-4" />
                                                 </Link>
                                                 <button
-                                                    onClick={() => setShowDeleteModal(novel.id)}
+                                                    onClick={() => setShowDeleteModal(novel._id || novel.id)}
                                                     className="p-2 text-gray-400 hover:text-red-600 hover:bg-white rounded-lg transition-all"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
@@ -179,7 +184,7 @@ export default function AdminNovelsPage() {
                 // Card View
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {filteredNovels.map((novel) => (
-                        <div key={novel.id} className="group relative bg-white rounded-xl border-2 border-dashed border-gray-200 overflow-hidden hover:border-gray-400 transition-all hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)]">
+                        <div key={novel._id || novel.id} className="group relative bg-white rounded-xl border-2 border-dashed border-gray-200 overflow-hidden hover:border-gray-400 transition-all hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)]">
                             <div className="p-8 bg-gray-50 flex items-center justify-center relative overflow-hidden group-hover:bg-gray-100 transition-colors">
                                 <div className="p-4 bg-white rounded-2xl shadow-sm transform group-hover:scale-110 transition-transform duration-300">
                                     <BookOpen className="w-12 h-12 text-gray-300 group-hover:text-gray-900 transition-colors" />
@@ -188,13 +193,13 @@ export default function AdminNovelsPage() {
                                 {/* Overlay Actions */}
                                 <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 backdrop-blur-[1px]">
                                     <Link
-                                        href={`/admin/novels/${novel.id}`}
+                                        href={`/admin/novels/${novel._id || novel.id}`}
                                         className="p-3 bg-white rounded-full text-gray-900 hover:scale-110 transition-transform shadow-lg"
                                     >
                                         <Edit className="w-5 h-5" />
                                     </Link>
                                     <button
-                                        onClick={() => setShowDeleteModal(novel.id)}
+                                        onClick={() => setShowDeleteModal(novel._id || novel.id)}
                                         className="p-3 bg-white rounded-full text-red-500 hover:scale-110 transition-transform shadow-lg"
                                     >
                                         <Trash2 className="w-5 h-5" />
@@ -212,7 +217,7 @@ export default function AdminNovelsPage() {
                                 <h3 className="font-bold text-gray-900 truncate mb-1" title={novel.title}>{novel.title}</h3>
                                 <p className="text-xs font-bold text-gray-500 mb-3">{novel.author}</p>
                                 <div className="flex items-center justify-between text-xs font-medium text-gray-400">
-                                    <span>{novel.chapters} Chapters</span>
+                                    <span>{novel.totalChapters} Chapters</span>
                                 </div>
                             </div>
                         </div>

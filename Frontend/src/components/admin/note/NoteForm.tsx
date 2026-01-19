@@ -2,17 +2,15 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Save, Upload, X, FileText, Tag, AlertCircle } from 'lucide-react';
+import { Save, Upload, FileText, Tag, Plus, X } from 'lucide-react';
+import apiClient from '@/src/lib/apiClient';
 
-// Mock Data for Dropdowns
-const MOCK_NOVELS = [
-    { id: '1', title: 'Pride and Prejudice', totalChapters: 61 },
-    { id: '2', title: 'The Great Gatsby', totalChapters: 9 },
-    { id: '3', title: '1984', totalChapters: 24 },
-];
-
-const IMPORTANCE_LEVELS = ['High', 'Medium', 'Low'];
-const NOTE_TYPES = ['General', 'Character', 'Plot', 'Theme', 'Symbolism'];
+interface Novel {
+    id: string;
+    _id: string;
+    title: string;
+    totalChapters: number;
+}
 
 interface NoteFormProps {
     initialData?: any;
@@ -23,25 +21,44 @@ export function NoteForm({ initialData, isEditing = false }: NoteFormProps) {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [novels, setNovels] = useState<Novel[]>([]);
 
     // Form State
+    const getInitialNovelId = () => {
+        if (!initialData?.novel) return '';
+        return typeof initialData.novel === 'object' ? (initialData.novel._id || initialData.novel.id) : initialData.novel;
+    };
+
     const [formData, setFormData] = useState({
         title: initialData?.title || '',
         content: initialData?.content || '',
-        novelId: initialData?.novel || '',
+        novelId: getInitialNovelId(),
         chapter: initialData?.chapter || '',
-        importance: initialData?.importance || 'Medium', // Mapped to tags in real app
-        type: initialData?.type || 'General',           // Mapped to tags in real app
         tags: (initialData?.tags || []) as string[],
         isPublished: initialData?.isPublished || false,
     });
 
     const [availableChapters, setAvailableChapters] = useState<string[]>([]);
+    const [tagInput, setTagInput] = useState('');
+
+    // Fetch Novels
+    useEffect(() => {
+        const fetchNovels = async () => {
+            try {
+                const response = await apiClient.get('/novels');
+                setNovels(response.data.data.data);
+            } catch (error) {
+                console.error("Failed to fetch novels", error);
+            }
+        };
+        fetchNovels();
+    }, []);
+
 
     // Update available chapters when novel selection changes
     useEffect(() => {
-        if (formData.novelId) {
-            const selectedNovel = MOCK_NOVELS.find(n => n.id === formData.novelId);
+        if (formData.novelId && novels.length > 0) {
+            const selectedNovel = novels.find(n => (n._id === formData.novelId || n.id === formData.novelId));
             if (selectedNovel) {
                 const chapters = Array.from({ length: selectedNovel.totalChapters }, (_, i) => `Chapter ${i + 1}`);
                 setAvailableChapters(chapters);
@@ -51,7 +68,7 @@ export function NoteForm({ initialData, isEditing = false }: NoteFormProps) {
         } else {
             setAvailableChapters([]);
         }
-    }, [formData.novelId]);
+    }, [formData.novelId, novels]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -64,6 +81,25 @@ export function NoteForm({ initialData, isEditing = false }: NoteFormProps) {
 
     const togglePublish = () => {
         setFormData(prev => ({ ...prev, isPublished: !prev.isPublished }));
+    };
+
+    // Tag Handlers
+    const handleTagInputKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ',') {
+            e.preventDefault();
+            const newTag = tagInput.trim();
+            if (newTag && !formData.tags.includes(newTag)) {
+                setFormData(prev => ({ ...prev, tags: [...prev.tags, newTag] }));
+                setTagInput('');
+            }
+        }
+    };
+
+    const removeTag = (tagToRemove: string) => {
+        setFormData(prev => ({
+            ...prev,
+            tags: prev.tags.filter(tag => tag !== tagToRemove)
+        }));
     };
 
     // File Upload Handler
@@ -83,18 +119,28 @@ export function NoteForm({ initialData, isEditing = false }: NoteFormProps) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
 
-        // In a real app, we might merge importance and type into tags here
-        const finalData = {
-            ...formData,
-            tags: [...formData.tags, formData.importance, formData.type]
+        const { novelId, ...dataToSave } = formData;
+        const payload = {
+            ...dataToSave,
+            novel: novelId
         };
 
-        console.log('Submitting Note Data:', finalData);
-        setIsLoading(false);
-        router.push('/admin/note');
+        try {
+            const noteId = initialData?._id || initialData?.id;
+            if (isEditing && noteId) {
+                await apiClient.put(`/notes/${noteId}`, payload);
+            } else {
+                await apiClient.post('/notes', payload);
+            }
+            router.push('/admin/note');
+        } catch (error: any) {
+            console.error('Error saving note:', error);
+            const message = error.response?.data?.message || 'Failed to save note.';
+            alert(message);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     // Simple markdown renderer logic
@@ -183,8 +229,8 @@ export function NoteForm({ initialData, isEditing = false }: NoteFormProps) {
                                         required
                                     >
                                         <option value="">Select Novel</option>
-                                        {MOCK_NOVELS.map(novel => (
-                                            <option key={novel.id} value={novel.id}>{novel.title}</option>
+                                        {novels.map(novel => (
+                                            <option key={novel._id || novel.id} value={novel._id || novel.id}>{novel.title}</option>
                                         ))}
                                     </select>
                                 </div>
@@ -222,42 +268,34 @@ export function NoteForm({ initialData, isEditing = false }: NoteFormProps) {
                             />
                         </div>
 
-                        {/* Metadata: Importance and Type */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-xs font-black uppercase text-gray-400 tracking-wider flex items-center gap-1">
-                                    <AlertCircle className="w-3 h-3" /> Importance
-                                </label>
-                                <div className="relative">
-                                    <select
-                                        name="importance"
-                                        value={formData.importance}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent focus:border-gray-900 focus:bg-white rounded-lg font-bold text-gray-900 transition-all outline-none appearance-none cursor-pointer"
-                                    >
-                                        {IMPORTANCE_LEVELS.map(level => (
-                                            <option key={level} value={level}>{level}</option>
-                                        ))}
-                                    </select>
-                                </div>
+                        {/* Tags Input */}
+                        <div className="space-y-2">
+                            <label className="text-xs font-black uppercase text-gray-400 tracking-wider flex items-center gap-1">
+                                <Tag className="w-3 h-3" /> Tags
+                            </label>
+                            <div className="flex flex-wrap gap-2 mb-2">
+                                {formData.tags.map(tag => (
+                                    <span key={tag} className="inline-flex items-center px-2 py-1 rounded bg-gray-100 text-sm font-medium text-gray-700">
+                                        {tag}
+                                        <button
+                                            type="button"
+                                            onClick={() => removeTag(tag)}
+                                            className="ml-1 text-gray-400 hover:text-red-500 focus:outline-none"
+                                        >
+                                            <X className="w-3 h-3" />
+                                        </button>
+                                    </span>
+                                ))}
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-black uppercase text-gray-400 tracking-wider flex items-center gap-1">
-                                    <Tag className="w-3 h-3" /> Type
-                                </label>
-                                <div className="relative">
-                                    <select
-                                        name="type"
-                                        value={formData.type}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent focus:border-gray-900 focus:bg-white rounded-lg font-bold text-gray-900 transition-all outline-none appearance-none cursor-pointer"
-                                    >
-                                        {NOTE_TYPES.map(type => (
-                                            <option key={type} value={type}>{type}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
+                            <input
+                                type="text"
+                                value={tagInput}
+                                onChange={(e) => setTagInput(e.target.value)}
+                                onKeyDown={handleTagInputKeyDown}
+                                placeholder="Add a tag and press Enter..."
+                                className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent focus:border-gray-900 focus:bg-white rounded-lg font-bold text-gray-900 transition-all outline-none"
+                            />
+                            <p className="text-[10px] text-gray-400 font-medium">Press Enter or Comma to add tags</p>
                         </div>
                     </div>
                 </div>

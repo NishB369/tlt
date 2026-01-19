@@ -3,13 +3,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Save, Upload, X, FileText, Plus, Quote, Trash2 } from 'lucide-react';
+import apiClient from '@/src/lib/apiClient';
 
-// Mock Data for Dropdowns
-const MOCK_NOVELS = [
-    { id: '1', title: 'Pride and Prejudice', totalChapters: 61 },
-    { id: '2', title: 'The Great Gatsby', totalChapters: 9 },
-    { id: '3', title: '1984', totalChapters: 24 },
-];
+interface Novel {
+    id: string;
+    _id: string;
+    title: string;
+    totalChapters: number;
+}
 
 interface Quote {
     quote: string;
@@ -25,24 +26,43 @@ export function SummaryForm({ initialData, isEditing = false }: SummaryFormProps
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [novels, setNovels] = useState<Novel[]>([]);
 
     // Form State
+    const getInitialNovelId = () => {
+        if (!initialData?.novel) return '';
+        return typeof initialData.novel === 'object' ? (initialData.novel._id || initialData.novel.id) : initialData.novel;
+    };
+
     const [formData, setFormData] = useState({
         title: initialData?.title || '',
         content: initialData?.content || '',
-        novelId: initialData?.novel || '',
+        novelId: getInitialNovelId(),
         chapter: initialData?.chapter || '',
         importantQuotes: (initialData?.importantQuotes || []) as Quote[],
         isPublished: initialData?.isPublished || false,
+        characterMap: initialData?.characterMap || '',
     });
 
     const [availableChapters, setAvailableChapters] = useState<string[]>([]);
-    const [previewMode, setPreviewMode] = useState(false);
+
+    // Fetch Novels
+    useEffect(() => {
+        const fetchNovels = async () => {
+            try {
+                const response = await apiClient.get('/novels');
+                setNovels(response.data.data.data);
+            } catch (error) {
+                console.error("Failed to fetch novels", error);
+            }
+        };
+        fetchNovels();
+    }, []);
 
     // Update available chapters when novel selection changes
     useEffect(() => {
-        if (formData.novelId) {
-            const selectedNovel = MOCK_NOVELS.find(n => n.id === formData.novelId);
+        if (formData.novelId && novels.length > 0) {
+            const selectedNovel = novels.find(n => (n._id === formData.novelId || n.id === formData.novelId));
             if (selectedNovel) {
                 const chapters = Array.from({ length: selectedNovel.totalChapters }, (_, i) => `Chapter ${i + 1}`);
                 setAvailableChapters(chapters);
@@ -52,7 +72,7 @@ export function SummaryForm({ initialData, isEditing = false }: SummaryFormProps
         } else {
             setAvailableChapters([]);
         }
-    }, [formData.novelId]);
+    }, [formData.novelId, novels]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -105,11 +125,28 @@ export function SummaryForm({ initialData, isEditing = false }: SummaryFormProps
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        console.log('Submitting Summary Data:', formData);
-        setIsLoading(false);
-        router.push('/admin/summary');
+
+        const { novelId, ...dataToSave } = formData;
+        const payload = {
+            ...dataToSave,
+            novel: novelId
+        };
+
+        try {
+            const summaryId = initialData?._id || initialData?.id;
+            if (isEditing && summaryId) {
+                await apiClient.put(`/summaries/${summaryId}`, payload);
+            } else {
+                await apiClient.post('/summaries', payload);
+            }
+            router.push('/admin/summary');
+        } catch (error: any) {
+            console.error('Error saving summary:', error);
+            const message = error.response?.data?.message || 'Failed to save summary.';
+            alert(message);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     // Simple markdown renderer logic extracted from page.tsx reference
@@ -198,8 +235,8 @@ export function SummaryForm({ initialData, isEditing = false }: SummaryFormProps
                                         required
                                     >
                                         <option value="">Select Novel</option>
-                                        {MOCK_NOVELS.map(novel => (
-                                            <option key={novel.id} value={novel.id}>{novel.title}</option>
+                                        {novels.map(novel => (
+                                            <option key={novel._id || novel.id} value={novel._id || novel.id}>{novel.title}</option>
                                         ))}
                                     </select>
                                 </div>
@@ -236,6 +273,19 @@ export function SummaryForm({ initialData, isEditing = false }: SummaryFormProps
                                 required
                             />
                         </div>
+
+                        <div className="space-y-2">
+                            <label className="text-xs font-black uppercase text-gray-400 tracking-wider">Character Map URL</label>
+                            <input
+                                type="text"
+                                name="characterMap"
+                                value={formData.characterMap}
+                                onChange={handleChange}
+                                placeholder="e.g. URL to character map or JSON"
+                                className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent focus:border-gray-900 focus:bg-white rounded-lg font-medium text-gray-900 transition-all outline-none"
+                            />
+                        </div>
+
                     </div>
 
                     {/* Quotes Section */}

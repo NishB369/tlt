@@ -4,24 +4,7 @@ import { NovelForm } from '@/src/components/admin/novels/NovelForm';
 import { notFound } from 'next/navigation';
 import { useEffect, useState, use } from 'react';
 
-// Mock data fetcher
-const getNovelData = async (id: string) => {
-    // Simulate delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // Return mock data for now
-    return {
-        id,
-        title: 'Pride and Prejudice',
-        author: 'Jane Austen',
-        description: 'A romantic novel of manners written by Jane Austen in 1813.',
-        totalChapters: 61,
-        difficulty: 'intermediate',
-        tags: ['Classic', 'Romance', 'Fiction'],
-        coverImage: 'https://m.media-amazon.com/images/I/71Q1tPupKjL._AC_UF1000,1000_QL80_.jpg',
-        isPublished: true,
-    };
-};
+import apiClient from '@/src/lib/apiClient';
 
 export default function EditNovelPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
@@ -29,10 +12,18 @@ export default function EditNovelPage({ params }: { params: Promise<{ id: string
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        getNovelData(id).then((data) => {
-            setNovel(data);
-            setLoading(false);
-        });
+        const fetchNovel = async () => {
+            try {
+                const response = await apiClient.get(`/novels/${id}`);
+                setNovel(response.data.data.data);
+            } catch (error) {
+                console.error('Error fetching novel:', error);
+                setNovel(null); // Will trigger notFound() or could add specific error state
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchNovel();
     }, [id]);
 
     if (loading) {

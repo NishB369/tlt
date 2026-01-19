@@ -1,24 +1,39 @@
 'use client';
 
-import { use } from 'react';
+import { useState, useEffect, use } from 'react';
+import { notFound } from 'next/navigation';
 import { VideoForm } from '@/src/components/admin/videos/VideoForm';
+import apiClient from '@/src/lib/apiClient';
 
 export default function EditVideoPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
+    const [video, setVideo] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
 
-    // Mock Fetch Logic
-    // In real app, fetch data using id
-    // For now, passing mock data that matches structure
-    const mockData = {
-        title: 'Chapter 1 Analysis',
-        novel: '1', // ID matching mock novels
-        chapter: 'Chapter 1',
-        youtubeId: 'dQw4w9WgXcQ',
-        description: 'Detailed analysis of the opening chapter.',
-        thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
-        duration: 320,
-        isPublished: true,
-    };
+    useEffect(() => {
+        const fetchVideo = async () => {
+            try {
+                const response = await apiClient.get(`/videos/${id}`);
+                setVideo(response.data.data.data);
+            } catch (error) {
+                console.error('Error fetching video:', error);
+                setVideo(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchVideo();
+    }, [id]);
 
-    return <VideoForm initialData={mockData} isEditing={true} />;
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <div className="w-8 h-8 border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin" />
+            </div>
+        );
+    }
+
+    if (!video) return notFound();
+
+    return <VideoForm initialData={video} isEditing={true} />;
 }
