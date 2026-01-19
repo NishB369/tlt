@@ -1,6 +1,6 @@
 import express from 'express';
-import { googleLogin, refreshAccessToken, logout } from '../controllers/authController';
-import { authenticateToken } from '../middleware/authMiddleware';
+import { googleLogin, refreshAccessToken, logout } from '../controllers/authController.js';
+import { authenticateToken } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
