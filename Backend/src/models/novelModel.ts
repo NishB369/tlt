@@ -4,7 +4,6 @@ export interface INovel extends Document {
     title: string;
     author: string;
     description: string;
-    coverImage: string;
     totalChapters: number;
     tags: string[];
     difficulty: 'beginner' | 'intermediate' | 'advanced';
@@ -18,7 +17,6 @@ const novelSchema = new Schema<INovel>(
         title: { type: String, required: true, trim: true },
         author: { type: String, required: true },
         description: { type: String, required: true },
-        coverImage: { type: String, required: true },
         totalChapters: { type: Number, default: 0 },
         tags: [{ type: String }],
         difficulty: {
