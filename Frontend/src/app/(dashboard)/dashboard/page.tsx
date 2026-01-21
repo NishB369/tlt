@@ -113,7 +113,7 @@ export default function DashboardPage() {
                             {/* Video Info */}
                             <div className="flex-1 flex flex-col">
                                 <span className="inline-block self-start px-2 py-1 text-[10px] font-black text-accent-600 bg-accent-50 rounded border border-dashed border-accent-200 uppercase tracking-widest mb-3">
-                                    {lastVideo.novel} • {lastVideo.chapter}
+                                    {typeof lastVideo.novel === 'object' ? lastVideo.novel.title : lastVideo.novel} • {lastVideo.chapter}
                                 </span>
                                 <h4 className="text-xl font-black text-gray-900 mb-2 tracking-tight">
                                     {lastVideo.title}

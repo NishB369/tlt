@@ -74,7 +74,7 @@ export default function BookmarksPage() {
                                     <p className="text-[10px] font-bold text-gray-400 capitalize flex items-center gap-2">
                                         <span className="uppercase tracking-wider">{bookmark.type}</span>
                                         <span>•</span>
-                                        <span className="truncate max-w-[150px]">{'novel' in bookmark.item ? bookmark.item.novel : ''}</span>
+                                        <span className="truncate max-w-[150px]">{'novel' in bookmark.item ? (typeof bookmark.item.novel === 'string' ? bookmark.item.novel : bookmark.item.novel.title) : ''}</span>
                                     </p>
                                 </div>
                                 {/* Mobile Actions */}
@@ -98,7 +98,7 @@ export default function BookmarksPage() {
                                 <p className="text-xs font-bold text-gray-400 capitalize flex items-center gap-2">
                                     <span className="uppercase tracking-wider">{bookmark.type}</span>
                                     <span>•</span>
-                                    <span>{'novel' in bookmark.item ? bookmark.item.novel : ''}</span>
+                                    <span>{'novel' in bookmark.item ? (typeof bookmark.item.novel === 'string' ? bookmark.item.novel : bookmark.item.novel.title) : ''}</span>
                                 </p>
                             </div>
 
