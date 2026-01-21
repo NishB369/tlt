@@ -24,7 +24,7 @@ export interface Video {
   description: string;
   thumbnail: string;
   duration: number;
-  novel: string;
+  novel: string | { _id: string; title: string };
   chapter: string;
   order: number;
   tags: string[];
