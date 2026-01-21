@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from 'react';
-import { MOCK_VIDEOS, MOCK_NOVELS } from '@/src/lib/constants';
+import { MOCK_NOVELS } from '@/src/lib/constants';
 import { VideoCard } from '@/src/components/videos/VideoCard';
 import { Search, Grid, List, BookOpen, Video as VideoIcon, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import type { Video } from '@/src/types';
+import { useVideos } from '@/src/hooks/useVideos';
 
 // Collapsible Section Component
 function VideoSection({ title, videos, viewMode, defaultOpen = false }: { title: string; videos: Video[]; viewMode: 'grid' | 'list'; defaultOpen?: boolean }) {
@@ -62,25 +63,67 @@ function VideoSection({ title, videos, viewMode, defaultOpen = false }: { title:
 }
 
 export default function VideosPage() {
+    const { videos, loading, error } = useVideos();
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedNovel, setSelectedNovel] = useState<string>('all');
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
-    const filteredVideos = MOCK_VIDEOS.filter((video) => {
+    const filteredVideos = videos.filter((video) => {
         const matchesSearch = video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             video.description.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesNovel = selectedNovel === 'all' || video.novel === selectedNovel;
+
+        const novelTitle = typeof video.novel === 'object' ? video.novel.title : video.novel;
+        const matchesNovel = selectedNovel === 'all' || novelTitle === selectedNovel;
+
         return matchesSearch && matchesNovel;
     });
 
     // Group videos by novel
     const videosByNovel = filteredVideos.reduce((acc, video) => {
-        if (!acc[video.novel]) {
-            acc[video.novel] = [];
+        const novelTitle = typeof video.novel === 'object' ? video.novel.title : video.novel as string;
+
+        if (!acc[novelTitle]) {
+            acc[novelTitle] = [];
         }
-        acc[video.novel].push(video);
+        acc[novelTitle].push(video);
         return acc;
     }, {} as Record<string, Video[]>);
+
+    if (loading) {
+        return (
+            <div className="space-y-6 md:space-y-8 animate-fade-in max-w-7xl mx-auto p-2 md:p-0">
+                <div className="flex flex-col gap-2">
+                    <div className="h-10 w-48 bg-gray-200 rounded animate-pulse" />
+                    <div className="h-5 w-64 bg-gray-200 rounded animate-pulse" />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                        <div key={i} className="aspect-video bg-gray-200 rounded-xl animate-pulse" />
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[50vh] animate-fade-in">
+                <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4">
+                    <div className="text-red-500 font-bold text-2xl">!</div>
+                </div>
+                <h3 className="text-lg font-black text-gray-900 mb-2">Failed to load videos</h3>
+                <p className="text-sm font-medium text-gray-500 max-w-md text-center mb-6">
+                    {error}
+                </p>
+                <button
+                    onClick={() => window.location.reload()}
+                    className="px-4 py-2 bg-gray-900 text-white text-sm font-bold rounded-lg hover:bg-gray-800 transition-colors"
+                >
+                    Try Again
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6 md:space-y-8 animate-fade-in max-w-7xl mx-auto p-2 md:p-0">

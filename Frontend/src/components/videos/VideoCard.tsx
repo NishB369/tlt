@@ -78,7 +78,7 @@ export function VideoCard({ video, progress = 0, completed = false, isBookmarked
             <div className="p-4">
                 <div className="flex items-center gap-2 mb-3">
                     <span className="px-2 py-1 text-[10px] font-black text-accent-600 bg-accent-50 rounded border border-dashed border-accent-200 uppercase tracking-widest">
-                        {video.novel}
+                        {typeof video.novel === 'object' ? video.novel.title : video.novel}
                     </span>
                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">
                         {video.chapter}

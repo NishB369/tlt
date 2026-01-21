@@ -24,7 +24,7 @@ export interface Video {
   description: string;
   thumbnail: string;
   duration: number;
-  novel: string;
+  novel: string | { _id: string; title: string };
   chapter: string;
   order: number;
   tags: string[];
@@ -50,7 +50,7 @@ export interface Note {
   id: string;
   title: string;
   content: string;
-  novel: string;
+  novel: string | { _id: string; title: string };
   chapter: string;
   relatedVideoId?: string;
   tags: string[];
@@ -84,7 +84,7 @@ export interface Quiz {
   id: string;
   title: string;
   description: string;
-  novel: string;
+  novel: string | { _id: string; title: string };
   chapter: string;
   relatedVideoId?: string;
   questions: Question[];
@@ -114,10 +114,10 @@ export interface Summary {
   id: string;
   title: string;
   content: string;
-  novel: string;
+  novel: string | { _id: string; title: string };
   chapter: string;
   relatedVideoId?: string;
-  keyPoints: string[];
+
   importantQuotes: Array<{ quote: string; context: string }>;
   characterMap?: string;
   isPublished: boolean;
