@@ -117,7 +117,7 @@ export interface Summary {
   novel: string;
   chapter: string;
   relatedVideoId?: string;
-  keyPoints: string[];
+
   importantQuotes: Array<{ quote: string; context: string }>;
   characterMap?: string;
   isPublished: boolean;

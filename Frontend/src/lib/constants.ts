@@ -340,13 +340,7 @@ export const MOCK_SUMMARIES: Summary[] = [
         content: `# Chapter 1 Summary\n\nThe novel opens with one of the most famous lines in English literature...`,
         novel: 'Pride and Prejudice',
         chapter: 'Chapter 1',
-        keyPoints: [
-            'Introduction of the Bennet family',
-            'Mr. Bingley arrives at Netherfield',
-            'Mrs. Bennet\'s matchmaking ambitions',
-            'Mr. Bennet\'s ironic humor',
-            'The theme of marriage and fortune',
-        ],
+
         importantQuotes: [
             {
                 quote: 'It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.',

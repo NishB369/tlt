@@ -77,30 +77,13 @@ export default function SummaryPage() {
                                         {summary.title}
                                     </h3>
                                     <div className="flex items-center gap-3 md:gap-4 text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider flex-wrap">
-                                        <span>{summary.keyPoints.length} key points</span>
-                                        <span className="hidden sm:inline">•</span>
+
                                         <span>{summary.importantQuotes.length} quotes</span>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Key Points Preview */}
-                            <div className="mt-5 md:mt-6 p-4 md:p-5 bg-gray-50 rounded-lg border-2 border-dashed border-gray-100 flex-1">
-                                <h4 className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-widest mb-2 md:mb-3">Key Points Preview</h4>
-                                <ul className="space-y-2">
-                                    {summary.keyPoints.slice(0, 3).map((point: string, index: number) => (
-                                        <li key={index} className="text-xs md:text-sm text-gray-600 font-medium flex items-start gap-2 leading-relaxed">
-                                            <span className="text-primary-500 mt-1.5 w-1.5 h-1.5 rounded-full bg-primary-500 flex-shrink-0" />
-                                            <span className="line-clamp-2">{point}</span>
-                                        </li>
-                                    ))}
-                                    {summary.keyPoints.length > 3 && (
-                                        <li className="text-[10px] md:text-xs font-bold text-primary-600 uppercase tracking-wider pl-3.5 pt-1">
-                                            +{summary.keyPoints.length - 3} more points...
-                                        </li>
-                                    )}
-                                </ul>
-                            </div>
+
                         </div>
 
                         {/* Footer */}

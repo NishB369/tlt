@@ -157,21 +157,7 @@ export default function SummaryDetailPage() {
                         </nav>
                     </div>
 
-                    {/* Key Points */}
-                    <div className="bg-white rounded-lg p-5 md:p-6 shadow-sm border-2 border-dashed border-gray-200">
-                        <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2 text-xs md:text-sm uppercase tracking-wider">
-                            <List className="w-3.5 h-3.5 md:w-4 md:h-4 text-gray-400" />
-                            Key Points
-                        </h3>
-                        <ul className="space-y-3">
-                            {summary.keyPoints.map((point, index) => (
-                                <li key={index} className="text-sm text-gray-600 font-medium flex items-start gap-2 leading-relaxed">
-                                    <span className="text-accent-500 mt-1.5 w-1.5 h-1.5 rounded-full bg-accent-500 flex-shrink-0" />
-                                    {point}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+
 
                     {/* Personal Notes */}
                     <div className="bg-white rounded-lg p-5 md:p-6 shadow-sm border-2 border-dashed border-gray-200">
