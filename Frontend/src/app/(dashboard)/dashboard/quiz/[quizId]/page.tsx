@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { MOCK_QUIZZES } from '@/src/lib/constants';
+import { useQuiz } from '@/src/hooks/useQuizzes';
 import {
     ArrowLeft,
     Clock,
@@ -19,6 +19,7 @@ import {
     X,
 } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
+import { Quiz } from '@/src/types';
 
 type QuizState = 'intro' | 'taking' | 'results';
 
@@ -27,17 +28,24 @@ export default function QuizTakingPage() {
     const router = useRouter();
     const quizId = params.quizId as string;
 
-    const quiz = MOCK_QUIZZES.find((q) => q.id === quizId);
+    const { quiz, loading, error } = useQuiz(quizId);
 
     const [state, setState] = useState<QuizState>('intro');
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [answers, setAnswers] = useState<Record<string, number | string>>({});
     const [flaggedQuestions, setFlaggedQuestions] = useState<Set<string>>(new Set());
-    const [timeLeft, setTimeLeft] = useState(quiz?.timeLimit || 0);
+    const [timeLeft, setTimeLeft] = useState(0);
     const [showExplanations, setShowExplanations] = useState(false);
     const [showQuestionMap, setShowQuestionMap] = useState(false);
 
-    // Timer
+    // Initialize timer when quiz loads
+    useEffect(() => {
+        if (quiz?.timeLimit) {
+            setTimeLeft(quiz.timeLimit);
+        }
+    }, [quiz]);
+
+    // Timer logic
     useEffect(() => {
         if (state !== 'taking' || !quiz?.timeLimit) return;
 
@@ -55,11 +63,21 @@ export default function QuizTakingPage() {
         return () => clearInterval(timer);
     }, [state, quiz?.timeLimit]);
 
-    if (!quiz) {
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-96">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+            </div>
+        );
+    }
+
+    if (error || !quiz) {
         return (
             <div className="flex flex-col items-center justify-center h-96">
                 <div className="text-6xl mb-4">❓</div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Quiz not found</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    {error || 'Quiz not found'}
+                </h3>
                 <Link href="/dashboard/quiz" className="text-primary-600 hover:underline">
                     Back to Quizzes
                 </Link>

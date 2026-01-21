@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { MOCK_QUIZZES, MOCK_NOVELS } from '@/src/lib/constants';
+import { useQuizzes } from '@/src/hooks/useQuizzes';
+import { MOCK_NOVELS } from '@/src/lib/constants';
 import { Search, Clock, CheckCircle, Trophy, ArrowRight, HelpCircle } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 
@@ -10,12 +11,37 @@ export default function QuizListPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedNovel, setSelectedNovel] = useState<string>('all');
 
-    const filteredQuizzes = MOCK_QUIZZES.filter((quiz) => {
+    const { quizzes, loading, error } = useQuizzes();
+
+    const filteredQuizzes = quizzes.filter((quiz) => {
         const matchesSearch = quiz.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             quiz.description.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesNovel = selectedNovel === 'all' || quiz.novel === selectedNovel;
+
+        const quizNovelTitle = typeof quiz.novel === 'object' ? quiz.novel.title : quiz.novel;
+        const matchesNovel = selectedNovel === 'all' || quizNovelTitle === selectedNovel;
+
         return matchesSearch && matchesNovel;
     });
+
+    if (loading) {
+        return (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 animate-pulse max-w-7xl mx-auto mt-20">
+                {[...Array(6)].map((_, i) => (
+                    <div key={i} className="h-64 bg-gray-100 rounded-lg"></div>
+                ))}
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex flex-col items-center justify-center h-96">
+                <div className="text-red-500 mb-4">⚠️</div>
+                <h3 className="text-lg font-semibold text-gray-900">Failed to load quizzes</h3>
+                <p className="text-gray-500 text-sm mb-4">{error}</p>
+            </div>
+        );
+    }
 
     // Mock user quiz data
     const userQuizData: Record<string, { bestScore: number; attempts: number }> = {
@@ -79,7 +105,7 @@ export default function QuizListPage() {
                             <div className="p-5 md:p-6 flex-1 flex flex-col">
                                 <div className="flex items-center gap-3 mb-4">
                                     <span className="px-2 py-0.5 md:py-1 text-[10px] font-black text-accent-600 bg-accent-50 rounded border border-dashed border-accent-200 uppercase tracking-widest">
-                                        {quiz.novel}
+                                        {typeof quiz.novel === 'object' ? quiz.novel.title : quiz.novel}
                                     </span>
                                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">
                                         {quiz.chapter}

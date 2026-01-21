@@ -84,7 +84,7 @@ export interface Quiz {
   id: string;
   title: string;
   description: string;
-  novel: string;
+  novel: string | { _id: string; title: string };
   chapter: string;
   relatedVideoId?: string;
   questions: Question[];
