@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { Model, PopulateOptions } from 'mongoose';
-import * as factory from '../controllers/handlerFactory.js';
+import * as factory from '../controllers/handlerFactory';
 
 export const createCrudRouter = (Model: Model<any>, popOptions?: PopulateOptions | PopulateOptions[]) => {
     const router = Router();

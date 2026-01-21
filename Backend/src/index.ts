@@ -2,15 +2,15 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
-import { connectDB } from './config/db.js';
-import authRoutes from './routes/authRoutes.js';
-import videoRoutes from './routes/videoRoutes.js';
-import novelRoutes from './routes/novelRoutes.js';
-import statsRoutes from './routes/statsRoutes.js';
-import { createCrudRouter } from './utils/createCrudRouter.js';
-import { Summary } from './models/summaryModel.js';
-import { Note } from './models/noteModel.js';
-import { Quiz } from './models/quizModel.js';
+import { connectDB } from './config/db';
+import authRoutes from './routes/authRoutes';
+import videoRoutes from './routes/videoRoutes';
+import novelRoutes from './routes/novelRoutes';
+import statsRoutes from './routes/statsRoutes';
+import { createCrudRouter } from './utils/createCrudRouter';
+import { Summary } from './models/summaryModel';
+import { Note } from './models/noteModel';
+import { Quiz } from './models/quizModel';
 
 dotenv.config();
 

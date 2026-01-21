@@ -1,5 +1,5 @@
-import { Novel } from '../models/novelModel.js';
-import * as factory from './handlerFactory.js';
+import { Novel } from '../models/novelModel';
+import * as factory from './handlerFactory';
 
 export const getAllNovels = factory.getAll(Novel);
 export const getNovel = factory.getOne(Novel);

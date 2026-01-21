@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
-import { Novel } from '../models/novelModel.js';
-import { Video } from '../models/videoModel.js';
-import { Summary } from '../models/summaryModel.js';
-import { Note } from '../models/noteModel.js';
-import { Quiz } from '../models/quizModel.js';
+import { Novel } from '../models/novelModel';
+import { Video } from '../models/videoModel';
+import { Summary } from '../models/summaryModel';
+import { Note } from '../models/noteModel';
+import { Quiz } from '../models/quizModel';
 
-import { User } from '../models/userModel.js';
+import { User } from '../models/userModel';
 
 export const getAdminStats = async (req: Request, res: Response) => {
     try {

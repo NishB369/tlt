@@ -1,6 +1,6 @@
 import express from 'express';
-import * as videoController from '../controllers/videoController.js';
-import { authenticateToken } from '../middleware/authMiddleware.js';
+import * as videoController from '../controllers/videoController';
+import { authenticateToken } from '../middleware/authMiddleware';
 
 const router = express.Router();
 

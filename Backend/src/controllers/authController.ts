@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { OAuth2Client } from 'google-auth-library';
-import { User } from '../models/userModel.js';
-import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/tokenUtils.js';
+import { User } from '../models/userModel';
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/tokenUtils';
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 

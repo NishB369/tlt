@@ -1,5 +1,5 @@
-import { Video } from '../models/videoModel.js';
-import * as factory from './handlerFactory.js';
+import { Video } from '../models/videoModel';
+import * as factory from './handlerFactory';
 
 export const getAllVideos = factory.getAll(Video);
 export const getVideo = factory.getOne(Video);
