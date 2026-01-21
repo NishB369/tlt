@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { MOCK_SUMMARIES, MOCK_VIDEOS, MOCK_QUIZZES } from '@/src/lib/constants';
+import { useSummary } from '@/src/hooks/useSummaries';
+import { MOCK_VIDEOS, MOCK_QUIZZES } from '@/src/lib/constants';
 import {
     ArrowLeft,
     Bookmark,
@@ -24,18 +25,36 @@ export default function SummaryDetailPage() {
     const router = useRouter();
     const summaryId = params.summaryId as string;
 
-    const summary = MOCK_SUMMARIES.find((s) => s.id === summaryId);
-    const relatedVideo = MOCK_VIDEOS.find((v) => v.novel === summary?.novel);
-    const relatedQuiz = MOCK_QUIZZES.find((q) => q.novel === summary?.novel);
+    const { summary, loading, error } = useSummary(summaryId);
+
+    // Derived state for related content (using mocks for now)
+    const relatedVideo = MOCK_VIDEOS.find((v) => {
+        const summaryNovelTitle = summary && (typeof summary.novel === 'object' ? summary.novel.title : summary.novel);
+        return v.novel === summaryNovelTitle;
+    });
+    const relatedQuiz = MOCK_QUIZZES.find((q) => {
+        const summaryNovelTitle = summary && (typeof summary.novel === 'object' ? summary.novel.title : summary.novel);
+        return q.novel === summaryNovelTitle;
+    });
 
     const [personalNotes, setPersonalNotes] = useState('');
     const [isBookmarked, setIsBookmarked] = useState(false);
 
-    if (!summary) {
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-96">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+            </div>
+        );
+    }
+
+    if (error || !summary) {
         return (
             <div className="flex flex-col items-center justify-center h-96">
                 <div className="text-6xl mb-4">📋</div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Summary not found</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    {error || 'Summary not found'}
+                </h3>
                 <Link href="/dashboard/summary" className="text-primary-600 hover:underline">
                     Back to Summaries
                 </Link>
@@ -182,7 +201,7 @@ export default function SummaryDetailPage() {
                             <div className="space-y-3 md:space-y-4">
                                 <div className="flex items-center gap-3">
                                     <span className="px-2 py-1 md:px-3 md:py-1.5 text-[10px] md:text-[11px] font-black text-accent-600 bg-accent-50 rounded border border-dashed border-accent-200 uppercase tracking-widest">
-                                        {summary.novel}
+                                        {typeof summary.novel === 'object' ? summary.novel.title : summary.novel}
                                     </span>
                                     <span className="px-2 py-1 md:px-3 md:py-1.5 text-[10px] md:text-[11px] font-bold text-gray-500 bg-gray-50 rounded border border-dashed border-gray-200 uppercase tracking-widest">
                                         {summary.chapter}
