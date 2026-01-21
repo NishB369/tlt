@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { MOCK_NOTES, MOCK_VIDEOS, MOCK_QUIZZES } from '@/src/lib/constants';
+import { useNote } from '@/src/hooks/useNotes';
+import { MOCK_VIDEOS, MOCK_QUIZZES } from '@/src/lib/constants';
 import {
     ArrowLeft,
     Bookmark,
@@ -21,18 +22,36 @@ export default function NoteDetailPage() {
     const router = useRouter();
     const noteId = params.noteId as string;
 
-    const note = MOCK_NOTES.find((n) => n.id === noteId);
-    const relatedVideo = MOCK_VIDEOS.find((v) => v.novel === note?.novel);
-    const relatedQuiz = MOCK_QUIZZES.find((q) => q.novel === note?.novel);
+    const { note, loading, error } = useNote(noteId);
+
+    // Derived state for related content (using mocks for now as per plan/request)
+    const relatedVideo = MOCK_VIDEOS.find((v) => {
+        const noteNovelTitle = note && (typeof note.novel === 'object' ? note.novel.title : note.novel);
+        return v.novel === noteNovelTitle;
+    });
+    const relatedQuiz = MOCK_QUIZZES.find((q) => {
+        const noteNovelTitle = note && (typeof note.novel === 'object' ? note.novel.title : note.novel);
+        return q.novel === noteNovelTitle;
+    });
 
     const [personalNotes, setPersonalNotes] = useState('');
     const [isBookmarked, setIsBookmarked] = useState(false);
 
-    if (!note) {
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-96">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+            </div>
+        );
+    }
+
+    if (error || !note) {
         return (
             <div className="flex flex-col items-center justify-center h-96">
                 <div className="text-6xl mb-4">📝</div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Note not found</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    {error || 'Note not found'}
+                </h3>
                 <Link href="/dashboard/notes" className="text-primary-600 hover:underline">
                     Back to Notes
                 </Link>
@@ -175,7 +194,7 @@ export default function NoteDetailPage() {
                             <div className="space-y-3 md:space-y-4">
                                 <div className="flex items-center gap-2 md:gap-3">
                                     <span className="px-2.5 md:px-3 py-1 md:py-1.5 text-[10px] md:text-[11px] font-black text-accent-600 bg-accent-50 rounded border border-dashed border-accent-200 uppercase tracking-widest">
-                                        {note.novel}
+                                        {typeof note.novel === 'object' ? note.novel.title : note.novel}
                                     </span>
                                     <span className="px-2.5 md:px-3 py-1 md:py-1.5 text-[10px] md:text-[11px] font-bold text-gray-500 bg-gray-50 rounded border border-dashed border-gray-200 uppercase tracking-widest">
                                         {note.chapter}

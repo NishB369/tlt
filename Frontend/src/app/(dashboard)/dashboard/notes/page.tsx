@@ -2,20 +2,46 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { MOCK_NOTES, MOCK_NOVELS } from '@/src/lib/constants';
-import { Search, BookOpen, Filter, Clock, Bookmark, FileText } from 'lucide-react';
-import { formatRelativeTime, cn } from '@/src/lib/utils';
+import { useNotes } from '@/src/hooks/useNotes';
+import { MOCK_NOVELS } from '@/src/lib/constants';
+import { Search, BookOpen, Clock, Bookmark, FileText } from 'lucide-react';
+import { formatRelativeTime } from '@/src/lib/utils';
 
 export default function NotesPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedNovel, setSelectedNovel] = useState<string>('all');
 
-    const filteredNotes = MOCK_NOTES.filter((note) => {
+    const { notes, loading, error } = useNotes();
+
+    const filteredNotes = notes.filter((note) => {
         const matchesSearch = note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             note.content.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesNovel = selectedNovel === 'all' || note.novel === selectedNovel;
+
+        const noteNovelTitle = typeof note.novel === 'object' ? note.novel.title : note.novel;
+        const matchesNovel = selectedNovel === 'all' || noteNovelTitle === selectedNovel;
+
         return matchesSearch && matchesNovel;
     });
+
+    if (loading) {
+        return (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 animate-pulse max-w-7xl mx-auto mt-20">
+                {[...Array(6)].map((_, i) => (
+                    <div key={i} className="h-64 bg-gray-100 rounded-lg"></div>
+                ))}
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex flex-col items-center justify-center h-96">
+                <div className="text-red-500 mb-4">⚠️</div>
+                <h3 className="text-lg font-semibold text-gray-900">Failed to load notes</h3>
+                <p className="text-gray-500 text-sm mb-4">{error}</p>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6 md:space-y-8 animate-fade-in max-w-7xl mx-auto">
@@ -84,7 +110,7 @@ export default function NotesPage() {
 
                         <div className="flex items-center gap-2 mb-3">
                             <span className="px-2 py-0.5 md:py-1 text-[10px] font-black text-accent-600 bg-accent-50 rounded border border-dashed border-accent-200 uppercase tracking-widest">
-                                {note.novel}
+                                {typeof note.novel === 'object' ? note.novel.title : note.novel}
                             </span>
                             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">
                                 {note.chapter}

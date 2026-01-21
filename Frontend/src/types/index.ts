@@ -50,7 +50,7 @@ export interface Note {
   id: string;
   title: string;
   content: string;
-  novel: string;
+  novel: string | { _id: string; title: string };
   chapter: string;
   relatedVideoId?: string;
   tags: string[];
