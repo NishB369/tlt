@@ -129,14 +129,14 @@ export function VideoForm({ initialData, isEditing = false }: VideoFormProps) {
                     <button
                         type="button"
                         onClick={() => router.back()}
-                        className="px-4 py-2 text-sm font-bold text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                        className="px-4 py-2 text-sm font-bold text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors cursor-pointer"
                     >
                         Cancel
                     </button>
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="flex items-center gap-2 px-6 py-2 bg-gray-900 text-white font-bold text-sm rounded-lg hover:bg-gray-800 transition-all shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center gap-2 px-6 py-2 bg-gray-900 text-white font-bold text-sm rounded-lg hover:bg-gray-800 transition-all shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                         {isLoading ? (
                             <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -161,7 +161,7 @@ export function VideoForm({ initialData, isEditing = false }: VideoFormProps) {
                         <button
                             type="button"
                             onClick={togglePublish}
-                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 ${formData.isPublished ? 'bg-green-500' : 'bg-gray-200'
+                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 cursor-pointer ${formData.isPublished ? 'bg-green-500' : 'bg-gray-200'
                                 }`}
                         >
                             <span
@@ -174,7 +174,9 @@ export function VideoForm({ initialData, isEditing = false }: VideoFormProps) {
                     {/* Dependent Dropdowns */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                            <label className="text-xs font-black uppercase text-gray-400 tracking-wider">Novel</label>
+                            <label className="text-xs font-black uppercase text-gray-400 tracking-wider">
+                                Novel <span className="text-red-500 ml-1">*</span>
+                            </label>
                             <div className="relative">
                                 <select
                                     name="novelId"
@@ -198,7 +200,9 @@ export function VideoForm({ initialData, isEditing = false }: VideoFormProps) {
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <label className="text-xs font-black uppercase text-gray-400 tracking-wider">Chapter</label>
+                            <label className="text-xs font-black uppercase text-gray-400 tracking-wider">
+                                Chapter <span className="text-red-500 ml-1">*</span>
+                            </label>
                             <div className="relative">
                                 <select
                                     name="chapter"
@@ -225,7 +229,9 @@ export function VideoForm({ initialData, isEditing = false }: VideoFormProps) {
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-xs font-black uppercase text-gray-400 tracking-wider">Video Title</label>
+                        <label className="text-xs font-black uppercase text-gray-400 tracking-wider">
+                            Video Title <span className="text-red-500 ml-1">*</span>
+                        </label>
                         <input
                             type="text"
                             name="title"
@@ -251,7 +257,9 @@ export function VideoForm({ initialData, isEditing = false }: VideoFormProps) {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                            <label className="text-xs font-black uppercase text-gray-400 tracking-wider">YouTube ID</label>
+                            <label className="text-xs font-black uppercase text-gray-400 tracking-wider">
+                                YouTube ID <span className="text-red-500 ml-1">*</span>
+                            </label>
                             <div className="relative">
                                 <Youtube className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                 <input
@@ -301,7 +309,7 @@ export function VideoForm({ initialData, isEditing = false }: VideoFormProps) {
                                     <button
                                         type="button"
                                         onClick={() => setFormData(prev => ({ ...prev, thumbnail: '' }))}
-                                        className="p-2 bg-white rounded-full text-red-500 hover:bg-red-50 transition-colors"
+                                        className="p-2 bg-white rounded-full text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
                                     >
                                         <X className="w-5 h-5" />
                                     </button>
