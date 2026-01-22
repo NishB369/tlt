@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useQuiz } from '@/src/hooks/useQuizzes';
+import { useBookmarks } from '@/src/hooks/useBookmarks';
 import {
     ArrowLeft,
     Clock,
@@ -17,9 +18,11 @@ import {
     Home,
     Grid,
     X,
+    Bookmark,
 } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { Quiz } from '@/src/types';
+import { BookmarkButton } from '@/src/components/common/BookmarkButton';
 
 type QuizState = 'intro' | 'taking' | 'results';
 
@@ -144,7 +147,12 @@ export default function QuizTakingPage() {
                 </button>
 
                 <div className="max-w-3xl mx-auto">
-                    <div className="bg-white rounded-lg p-6 md:p-10 border-2 border-dashed border-gray-200 text-center">
+                    <div className="bg-white rounded-lg p-6 md:p-10 border-2 border-dashed border-gray-200 text-center relative">
+                        <BookmarkButton
+                            itemId={quiz.id}
+                            itemType="Quiz"
+                            className="absolute top-4 right-4 p-2 shadow-sm"
+                        />
                         <div className="w-16 h-16 md:w-24 md:h-24 mx-auto mb-6 md:mb-8 rounded-lg border-2 border-dashed border-accent-200 bg-accent-50 flex items-center justify-center">
                             <CheckCircle className="w-8 h-8 md:w-12 md:h-12 text-accent-500" />
                         </div>

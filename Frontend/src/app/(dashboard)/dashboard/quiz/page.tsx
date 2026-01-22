@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useQuizzes } from '@/src/hooks/useQuizzes';
+import { useBookmarks } from '@/src/hooks/useBookmarks';
 import { MOCK_NOVELS } from '@/src/lib/constants';
 import { Search, Clock, CheckCircle, Trophy, ArrowRight, HelpCircle } from 'lucide-react';
+import { BookmarkButton } from '@/src/components/common/BookmarkButton';
 import { cn } from '@/src/lib/utils';
 
 export default function QuizListPage() {
@@ -110,6 +112,13 @@ export default function QuizListPage() {
                                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">
                                         {quiz.chapter}
                                     </span>
+                                    <div className="ml-auto">
+                                        <BookmarkButton
+                                            itemId={quiz.id}
+                                            itemType="Quiz"
+                                            size="sm"
+                                        />
+                                    </div>
                                 </div>
 
                                 <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-2 md:mb-3 group-hover:text-accent-600 transition-colors">

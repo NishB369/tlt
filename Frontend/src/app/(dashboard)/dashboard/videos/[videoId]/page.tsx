@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useVideo, useVideos } from '@/src/hooks/useVideos';
+import { useBookmarks } from '@/src/hooks/useBookmarks';
 import { MOCK_NOTES, MOCK_QUIZZES } from '@/src/lib/constants';
 import { formatDuration, cn } from '@/src/lib/utils';
 import {
@@ -16,6 +17,7 @@ import {
     ChevronDown,
     ChevronRight,
 } from 'lucide-react';
+import { BookmarkButton } from '@/src/components/common/BookmarkButton';
 
 export default function VideoPlayerPage() {
     const params = useParams();
@@ -136,9 +138,11 @@ export default function VideoPlayerPage() {
                                     {video.title}
                                 </h1>
                             </div>
-                            <button className="self-start sm:self-auto p-2 md:p-3 rounded-lg bg-gray-50 border-2 border-dashed border-gray-200 hover:border-accent-200 hover:text-accent-600 transition-all group">
-                                <Bookmark className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-accent-600 transition-colors" />
-                            </button>
+                            <BookmarkButton
+                                itemId={video.id}
+                                itemType="Video"
+                                className="self-start sm:self-auto p-2 md:p-3"
+                            />
                         </div>
                         <p className="text-gray-600 text-xs md:text-sm leading-relaxed mb-6 md:mb-8 border-l-4 border-gray-100 pl-4">
                             {video.description}

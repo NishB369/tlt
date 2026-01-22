@@ -17,19 +17,27 @@ import {
 } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { useAuth } from '@/src/lib/auth';
+import { useBookmarks } from '@/src/hooks/useBookmarks';
 
 interface SidebarProps {
     className?: string;
     onClose?: () => void;
 }
 
-const menuItems = [
+type MenuItem = {
+    name: string;
+    icon: any;
+    href: string;
+    badge?: number;
+};
+
+const menuItems: MenuItem[] = [
     { name: 'Overview', icon: Home, href: '/dashboard' },
     { name: 'Videos', icon: Video, href: '/dashboard/videos' },
     { name: 'Notes', icon: BookOpen, href: '/dashboard/notes' },
     { name: 'Quizzes', icon: CheckCircle, href: '/dashboard/quiz' },
     { name: 'Summary', icon: FileText, href: '/dashboard/summary' },
-    { name: 'Bookmarks', icon: Bookmark, href: '/dashboard/bookmarks', badge: 3 },
+    { name: 'Bookmarks', icon: Bookmark, href: '/dashboard/bookmarks' },
     { name: 'History', icon: Clock, href: '/dashboard/history' },
     { name: 'Analytics', icon: BarChart3, href: '/dashboard/analytics' },
 ];
@@ -37,6 +45,7 @@ const menuItems = [
 export function Sidebar({ className, onClose }: SidebarProps) {
     const pathname = usePathname();
     const { user, logout } = useAuth();
+    const { bookmarks } = useBookmarks();
 
     const handleLogout = async () => {
         await logout();
@@ -71,6 +80,8 @@ export function Sidebar({ className, onClose }: SidebarProps) {
                     const isActive = pathname === item.href ||
                         (item.href !== '/dashboard' && pathname.startsWith(item.href));
 
+                    const badge = item.name === 'Bookmarks' ? bookmarks?.length : item.badge;
+
                     return (
                         <Link
                             key={item.name}
@@ -88,14 +99,14 @@ export function Sidebar({ className, onClose }: SidebarProps) {
                                 isActive ? 'text-white' : 'text-gray-400 group-hover:text-accent-500'
                             )} />
                             <span className="tracking-tight">{item.name}</span>
-                            {item.badge && (
+                            {(badge !== undefined && badge > 0) && (
                                 <span className={cn(
                                     'ml-auto px-2 py-0.5 text-[10px] font-black rounded border border-dashed',
                                     isActive
                                         ? 'bg-white/20 text-white border-white/20'
                                         : 'bg-accent-50 text-accent-600 border-accent-200'
                                 )}>
-                                    {item.badge}
+                                    {badge}
                                 </span>
                             )}
                         </Link>
