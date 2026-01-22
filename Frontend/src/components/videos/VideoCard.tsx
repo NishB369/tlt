@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Play, CheckCircle } from 'lucide-react';
 import { formatDuration, cn } from '@/src/lib/utils';
+import { MOCK_VIDEOS, DEFAULT_VIDEO_THUMBNAIL } from '@/src/lib/constants';
 import { Video } from '@/src/types';
 import { BookmarkButton } from '@/src/components/common/BookmarkButton';
 
@@ -21,7 +22,7 @@ export function VideoCard({ video, progress = 0, completed = false }: VideoCardP
             {/* Thumbnail */}
             <div className="relative aspect-video rounded-t-md overflow-hidden bg-gray-100 border-b-2 border-dashed border-gray-100 group-hover:border-accent-200 transition-colors">
                 <img
-                    src={video.thumbnail}
+                    src={video.thumbnail || DEFAULT_VIDEO_THUMBNAIL}
                     alt={video.title}
                     className="w-full h-full object-cover grayscale brightness-90 group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-500"
                 />

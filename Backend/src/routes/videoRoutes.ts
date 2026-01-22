@@ -16,6 +16,7 @@ router
     .route('/:id')
     .get(videoController.getVideo)
     .patch(videoController.updateVideo)
+    .put(videoController.updateVideo)
     .delete(videoController.deleteVideo);
 
 export default router;

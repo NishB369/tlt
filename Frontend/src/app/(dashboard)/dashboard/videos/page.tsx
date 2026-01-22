@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from 'react';
-import { MOCK_NOVELS } from '@/src/lib/constants';
 import { VideoCard } from '@/src/components/videos/VideoCard';
-import { Search, Grid, List, BookOpen, Video as VideoIcon, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, BookOpen, Video as VideoIcon, ChevronDown } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import type { Video } from '@/src/types';
 import { useVideos } from '@/src/hooks/useVideos';
+import { useNovels } from '@/src/hooks/useNovels';
 
 // Collapsible Section Component
-function VideoSection({ title, videos, viewMode, defaultOpen = false }: { title: string; videos: Video[]; viewMode: 'grid' | 'list'; defaultOpen?: boolean }) {
+function VideoSection({ title, videos, defaultOpen = false }: { title: string; videos: Video[]; defaultOpen?: boolean }) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
 
     return (
@@ -40,13 +40,7 @@ function VideoSection({ title, videos, viewMode, defaultOpen = false }: { title:
                 isOpen ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
             )}>
                 <div className="p-4 md:p-6 pt-0 md:pt-2 border-t border-dashed border-gray-100">
-                    <div
-                        className={cn(
-                            viewMode === 'grid'
-                                ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6'
-                                : 'space-y-3 md:space-y-4'
-                        )}
-                    >
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                         {videos.map((video) => (
                             <VideoCard
                                 key={video.id}
@@ -64,16 +58,16 @@ function VideoSection({ title, videos, viewMode, defaultOpen = false }: { title:
 
 export default function VideosPage() {
     const { videos, loading, error } = useVideos();
+    const { novels } = useNovels();
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedNovel, setSelectedNovel] = useState<string>('all');
-    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
     const filteredVideos = videos.filter((video) => {
         const matchesSearch = video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             video.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-        const novelTitle = typeof video.novel === 'object' ? video.novel.title : video.novel;
-        const matchesNovel = selectedNovel === 'all' || novelTitle === selectedNovel;
+        const videoNovelTitle = typeof video.novel === 'object' ? video.novel.title : video.novel;
+        const matchesNovel = selectedNovel === 'all' || videoNovelTitle === selectedNovel;
 
         return matchesSearch && matchesNovel;
     });
@@ -148,85 +142,35 @@ export default function VideosPage() {
                 </div>
 
                 {/* Novel Filter */}
-                <div className="flex items-center gap-2 md:gap-3">
-                    <div className="relative group flex-1 sm:flex-none">
-                        <select
-                            value={selectedNovel}
-                            onChange={(e) => setSelectedNovel(e.target.value)}
-                            className="w-full sm:w-auto appearance-none pl-4 pr-10 py-2.5 md:py-3 bg-white border-2 border-dashed border-gray-200 rounded-lg text-sm font-bold text-gray-700 focus:outline-none focus:border-accent-500 focus:ring-0 transition-all cursor-pointer hover:border-gray-300"
-                        >
-                            <option value="all">All Novels</option>
-                            {MOCK_NOVELS.map((novel) => (
-                                <option key={novel.id} value={novel.title}>
-                                    {novel.title}
-                                </option>
-                            ))}
-                        </select>
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                            <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[6px] border-t-gray-400 group-hover:border-t-gray-600 transition-colors" />
-                        </div>
-                    </div>
-
-                    {/* View Toggle */}
-                    <div className="hidden sm:flex items-center gap-1 p-1 bg-white border-2 border-dashed border-gray-200 rounded-lg shrink-0">
-                        <button
-                            onClick={() => setViewMode('grid')}
-                            className={cn(
-                                'p-2 rounded transition-all duration-200',
-                                viewMode === 'grid'
-                                    ? 'bg-accent-500 text-white shadow-sm'
-                                    : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
-                            )}
-                        >
-                            <Grid className="w-4 h-4 fill-current" />
-                        </button>
-                        <button
-                            onClick={() => setViewMode('list')}
-                            className={cn(
-                                'p-2 rounded transition-all duration-200',
-                                viewMode === 'list'
-                                    ? 'bg-accent-500 text-white shadow-sm'
-                                    : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
-                            )}
-                        >
-                            <List className="w-4 h-4 fill-current" />
-                        </button>
+                <div className="relative group min-w-[200px]">
+                    <select
+                        value={selectedNovel}
+                        onChange={(e) => setSelectedNovel(e.target.value)}
+                        className="w-full appearance-none pl-4 pr-10 py-2.5 md:py-3 bg-white border-2 border-dashed border-gray-200 rounded-lg text-sm font-bold text-gray-700 focus:outline-none focus:border-accent-500 focus:ring-0 transition-all cursor-pointer hover:border-gray-300"
+                    >
+                        <option value="all">All Novels</option>
+                        {novels.map((novel) => (
+                            <option key={novel.id} value={novel.title}>
+                                {novel.title}
+                            </option>
+                        ))}
+                    </select>
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                        <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[6px] border-t-gray-400 group-hover:border-t-gray-600 transition-colors" />
                     </div>
                 </div>
             </div>
 
             {/* Videos Grid/List */}
-            {selectedNovel === 'all' ? (
-                // Grouped by Novel View - Collapsible
-                <div className="space-y-6">
-                    {(Object.entries(videosByNovel) as [string, Video[]][]).map(([novel, videos]) => (
-                        <VideoSection
-                            key={novel}
-                            title={novel}
-                            videos={videos}
-                            viewMode={viewMode}
-                        />
-                    ))}
-                </div>
-            ) : (
-                // Filtered View
-                <div
-                    className={cn(
-                        viewMode === 'grid'
-                            ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
-                            : 'space-y-4'
-                    )}
-                >
-                    {filteredVideos.map((video) => (
-                        <VideoCard
-                            key={video.id}
-                            video={video}
-                            progress={video.id === 'v2' ? 60 : video.id === 'v1' ? 100 : 0}
-                            completed={video.id === 'v1'}
-                        />
-                    ))}
-                </div>
-            )}
+            <div className="space-y-6">
+                {(Object.entries(videosByNovel) as [string, Video[]][]).map(([novel, videos]) => (
+                    <VideoSection
+                        key={novel}
+                        title={novel}
+                        videos={videos}
+                    />
+                ))}
+            </div>
 
             {/* Empty State */}
             {filteredVideos.length === 0 && (

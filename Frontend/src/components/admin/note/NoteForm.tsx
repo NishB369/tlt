@@ -176,14 +176,14 @@ export function NoteForm({ initialData, isEditing = false }: NoteFormProps) {
                     <button
                         type="button"
                         onClick={() => router.back()}
-                        className="px-4 py-2 text-sm font-bold text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                        className="px-4 py-2 text-sm font-bold text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors cursor-pointer"
                     >
                         Cancel
                     </button>
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="flex items-center gap-2 px-6 py-2 bg-gray-900 text-white font-bold text-sm rounded-lg hover:bg-gray-800 transition-all shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center gap-2 px-6 py-2 bg-gray-900 text-white font-bold text-sm rounded-lg hover:bg-gray-800 transition-all shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                         {isLoading ? (
                             <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -209,7 +209,7 @@ export function NoteForm({ initialData, isEditing = false }: NoteFormProps) {
                             <button
                                 type="button"
                                 onClick={togglePublish}
-                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 ${formData.isPublished ? 'bg-green-500' : 'bg-gray-200'
+                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 cursor-pointer ${formData.isPublished ? 'bg-green-500' : 'bg-gray-200'
                                     }`}
                             >
                                 <span className={`${formData.isPublished ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out`} />
@@ -219,7 +219,9 @@ export function NoteForm({ initialData, isEditing = false }: NoteFormProps) {
                         {/* Dropdowns */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <label className="text-xs font-black uppercase text-gray-400 tracking-wider">Novel</label>
+                                <label className="text-xs font-black uppercase text-gray-400 tracking-wider">
+                                    Novel <span className="text-red-500 ml-1">*</span>
+                                </label>
                                 <div className="relative">
                                     <select
                                         name="novelId"
@@ -233,10 +235,17 @@ export function NoteForm({ initialData, isEditing = false }: NoteFormProps) {
                                             <option key={novel._id || novel.id} value={novel._id || novel.id}>{novel.title}</option>
                                         ))}
                                     </select>
+                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                    </div>
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-xs font-black uppercase text-gray-400 tracking-wider">Chapter</label>
+                                <label className="text-xs font-black uppercase text-gray-400 tracking-wider">
+                                    Chapter <span className="text-red-500 ml-1">*</span>
+                                </label>
                                 <div className="relative">
                                     <select
                                         name="chapter"
@@ -251,12 +260,19 @@ export function NoteForm({ initialData, isEditing = false }: NoteFormProps) {
                                             <option key={chapter} value={chapter}>{chapter}</option>
                                         ))}
                                     </select>
+                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-xs font-black uppercase text-gray-400 tracking-wider">Title</label>
+                            <label className="text-xs font-black uppercase text-gray-400 tracking-wider">
+                                Title <span className="text-red-500 ml-1">*</span>
+                            </label>
                             <input
                                 type="text"
                                 name="title"
@@ -280,7 +296,7 @@ export function NoteForm({ initialData, isEditing = false }: NoteFormProps) {
                                         <button
                                             type="button"
                                             onClick={() => removeTag(tag)}
-                                            className="ml-1 text-gray-400 hover:text-red-500 focus:outline-none"
+                                            className="ml-1 text-gray-400 hover:text-red-500 focus:outline-none cursor-pointer"
                                         >
                                             <X className="w-3 h-3" />
                                         </button>

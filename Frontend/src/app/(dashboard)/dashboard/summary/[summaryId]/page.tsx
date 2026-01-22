@@ -9,16 +9,18 @@ import { MOCK_VIDEOS, MOCK_QUIZZES } from '@/src/lib/constants';
 import {
     ArrowLeft,
     Bookmark,
-    Download,
-    Printer,
+    Share2,
     Video,
     CheckCircle,
     FileText,
     Hash,
     List,
     Quote,
-    ArrowRight
+    ArrowRight,
+    ChevronDown,
+    ChevronRight,
 } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 import { cn } from '@/src/lib/utils';
 import { BookmarkButton } from '@/src/components/common/BookmarkButton';
 
@@ -28,6 +30,35 @@ export default function SummaryDetailPage() {
     const summaryId = params.summaryId as string;
 
     const { summary, loading, error } = useSummary(summaryId);
+
+    const handleShare = async () => {
+        if (!summary) return;
+        const url = window.location.href;
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: summary.title,
+                    text: `Check out this summary: ${summary.title}`,
+                    url,
+                });
+            } catch (err) {
+                // Ignore AbortError which happens when user cancels share
+                if ((err as Error).name !== 'AbortError') {
+                    console.error('Error sharing:', err);
+                    toast.error('Failed to share');
+                }
+            }
+        } else {
+            try {
+                await navigator.clipboard.writeText(url);
+                toast.success('Link copied to clipboard!');
+            } catch (err) {
+                console.error('Error copying to clipboard:', err);
+                toast.error('Failed to copy link');
+            }
+        }
+    };
 
     // Derived state for related content (using mocks for now)
     const relatedVideo = MOCK_VIDEOS.find((v) => {
@@ -40,6 +71,7 @@ export default function SummaryDetailPage() {
     });
 
     const [personalNotes, setPersonalNotes] = useState('');
+    const [isTocExpanded, setIsTocExpanded] = useState(true);
 
     if (loading) {
         return (
@@ -72,6 +104,14 @@ export default function SummaryDetailPage() {
         return { level, text, id };
     });
 
+    const handleScrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+        e.preventDefault();
+        const element = document.getElementById(id);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
     // Simple markdown to HTML conversion
     const renderContent = (content: string) => {
         return content
@@ -79,23 +119,29 @@ export default function SummaryDetailPage() {
             .map((line, i) => {
                 // Headers
                 if (line.startsWith('### ')) {
+                    const text = line.replace('### ', '');
+                    const id = text.toLowerCase().replace(/\s+/g, '-');
                     return (
-                        <h3 key={i} className="text-xl font-bold text-gray-900 mt-8 mb-4 tracking-tight">
-                            {line.replace('### ', '')}
+                        <h3 id={id} key={i} className="text-xl font-bold text-gray-900 mt-8 mb-4 tracking-tight">
+                            {text}
                         </h3>
                     );
                 }
                 if (line.startsWith('## ')) {
+                    const text = line.replace('## ', '');
+                    const id = text.toLowerCase().replace(/\s+/g, '-');
                     return (
-                        <h2 key={i} className="text-2xl font-black text-gray-900 mt-10 mb-5 tracking-tight border-b-2 border-dashed border-gray-100 pb-2">
-                            {line.replace('## ', '')}
+                        <h2 id={id} key={i} className="text-2xl font-black text-gray-900 mt-10 mb-5 tracking-tight border-b-2 border-dashed border-gray-100 pb-2">
+                            {text}
                         </h2>
                     );
                 }
                 if (line.startsWith('# ')) {
+                    const text = line.replace('# ', '');
+                    const id = text.toLowerCase().replace(/\s+/g, '-');
                     return (
-                        <h1 key={i} className="text-3xl font-black text-gray-900 mt-8 mb-6 tracking-tight">
-                            {line.replace('# ', '')}
+                        <h1 id={id} key={i} className="text-3xl font-black text-gray-900 mt-8 mb-6 tracking-tight">
+                            {text}
                         </h1>
                     );
                 }
@@ -149,35 +195,49 @@ export default function SummaryDetailPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-8">
                 {/* Sidebar (TOC & Key Points) */}
-                <div className="lg:col-span-1 order-2 lg:order-1 space-y-4 md:space-y-6">
+                <div className="lg:col-span-1 order-2 lg:order-1 flex flex-col gap-4 md:gap-6 lg:h-[calc(100vh-140px)] overflow-y-auto">
                     {/* Table of Contents */}
-                    <div className="bg-white rounded-lg p-5 md:p-6 shadow-sm border-2 border-dashed border-gray-200">
-                        <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2 text-xs md:text-sm uppercase tracking-wider">
-                            <Hash className="w-3.5 h-3.5 md:w-4 md:h-4 text-gray-400" />
-                            Contents
-                        </h3>
-                        <nav className="space-y-3">
-                            {toc.length > 0 ? (
-                                toc.map((item: any, index: number) => (
-                                    <a
-                                        key={index}
-                                        href={`#${item.id}`}
-                                        className={cn(
-                                            'block text-sm font-medium text-gray-500 hover:text-accent-600 transition-colors border-l-2 border-transparent hover:border-accent-300 pl-3 -ml-3',
-                                            item.level === 2 && 'ml-0',
-                                            item.level === 3 && 'ml-4'
-                                        )}
-                                    >
-                                        {item.text}
-                                    </a>
-                                ))
+                    <div className="bg-white rounded-lg p-5 md:p-6 shadow-sm border-2 border-dashed border-gray-200 transition-all duration-300">
+                        <button
+                            onClick={() => setIsTocExpanded(!isTocExpanded)}
+                            className="w-full font-bold text-gray-900 mb-0 flex items-center justify-between gap-2 text-xs md:text-sm uppercase tracking-wider hover:text-accent-600 transition-colors"
+                        >
+                            <div className="flex items-center gap-2">
+                                <Hash className="w-3.5 h-3.5 md:w-4 md:h-4 text-gray-400" />
+                                Contents
+                            </div>
+                            {isTocExpanded ? (
+                                <ChevronDown className="w-4 h-4 text-gray-400" />
                             ) : (
-                                <p className="text-sm text-gray-400 italic">No headings found</p>
+                                <ChevronRight className="w-4 h-4 text-gray-400" />
                             )}
-                        </nav>
+                        </button>
+
+                        {isTocExpanded && (
+                            <nav className="space-y-3 mt-4 animate-accordion-down max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+                                {toc.length > 0 ? (
+                                    toc.map((item: any, index: number) => (
+                                        <a
+                                            key={index}
+                                            href={`#${item.id}`}
+                                            onClick={(e) => handleScrollToSection(e, item.id)}
+                                            className={cn(
+                                                'block text-sm font-medium text-gray-500 hover:text-accent-600 transition-colors border-l-2 border-transparent hover:border-accent-300 pl-3 -ml-3',
+                                                item.level === 2 && 'ml-0',
+                                                item.level === 3 && 'ml-4'
+                                            )}
+                                        >
+                                            {item.text}
+                                        </a>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-gray-400 italic">No headings found</p>
+                                )}
+                            </nav>
+                        )}
                     </div>
 
-
+                    {/* Key takeaways removed in previous refactor, keeping personal notes */}
 
                     {/* Personal Notes */}
                     <div className="bg-white rounded-lg p-5 md:p-6 shadow-sm border-2 border-dashed border-gray-200">
@@ -196,94 +256,100 @@ export default function SummaryDetailPage() {
 
                 {/* Main Content */}
                 <div className="lg:col-span-3 order-1 lg:order-2 space-y-4 md:space-y-8">
-                    <div className="bg-white rounded-lg p-5 md:p-8 shadow-sm border-2 border-dashed border-gray-200">
+                    <div className="bg-white rounded-lg shadow-sm border-2 border-dashed border-gray-200 flex flex-col lg:h-[calc(100vh-140px)] overflow-hidden">
                         {/* Header */}
-                        <div className="flex flex-col md:flex-row md:items-start justify-between mb-6 md:mb-8 pb-6 md:pb-8 border-b-2 border-dashed border-gray-100 gap-4">
-                            <div className="space-y-3 md:space-y-4">
-                                <div className="flex items-center gap-3">
-                                    <span className="px-2 py-1 md:px-3 md:py-1.5 text-[10px] md:text-[11px] font-black text-accent-600 bg-accent-50 rounded border border-dashed border-accent-200 uppercase tracking-widest">
-                                        {typeof summary.novel === 'object' ? summary.novel.title : summary.novel}
-                                    </span>
-                                    <span className="px-2 py-1 md:px-3 md:py-1.5 text-[10px] md:text-[11px] font-bold text-gray-500 bg-gray-50 rounded border border-dashed border-gray-200 uppercase tracking-widest">
-                                        {summary.chapter}
-                                    </span>
+                        <div className="flex-none p-5 md:p-8 border-b-2 border-dashed border-gray-100 bg-white">
+                            <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                                <div className="space-y-3 md:space-y-4">
+                                    <div className="flex items-center gap-3">
+                                        <span className="px-2 py-1 md:px-3 md:py-1.5 text-[10px] md:text-[11px] font-black text-accent-600 bg-accent-50 rounded border border-dashed border-accent-200 uppercase tracking-widest">
+                                            {typeof summary.novel === 'object' ? summary.novel.title : summary.novel}
+                                        </span>
+                                        <span className="px-2 py-1 md:px-3 md:py-1.5 text-[10px] md:text-[11px] font-bold text-gray-500 bg-gray-50 rounded border border-dashed border-gray-200 uppercase tracking-widest">
+                                            {summary.chapter}
+                                        </span>
+                                    </div>
+                                    <h1 className="text-2xl md:text-4xl font-black text-gray-900 tracking-tight leading-tight">
+                                        {summary.title}
+                                    </h1>
                                 </div>
-                                <h1 className="text-2xl md:text-4xl font-black text-gray-900 tracking-tight leading-tight">
-                                    {summary.title}
-                                </h1>
-                            </div>
-                            <div className="flex items-center gap-3 self-start">
-                                <BookmarkButton
-                                    itemId={summary.id}
-                                    itemType="Summary"
-                                    className="p-2 md:p-2.5"
-                                />
-                                <button className="p-2 md:p-2.5 rounded-lg bg-white border-2 border-dashed border-gray-200 text-gray-400 hover:border-accent-200 hover:text-accent-600 transition-all">
-                                    <Download className="w-4 h-4 md:w-5 md:h-5" />
-                                </button>
-                                <button className="p-2 md:p-2.5 rounded-lg bg-white border-2 border-dashed border-gray-200 text-gray-400 hover:border-accent-200 hover:text-accent-600 transition-all">
-                                    <Printer className="w-4 h-4 md:w-5 md:h-5" />
-                                </button>
+                                <div className="flex items-center gap-3 self-start">
+                                    <BookmarkButton
+                                        itemId={summary.id}
+                                        itemType="Summary"
+                                        className="p-2 md:p-2.5"
+                                    />
+                                    <button
+                                        onClick={handleShare}
+                                        className="p-2 md:p-2.5 rounded-lg bg-white border-2 border-dashed border-gray-200 text-gray-400 hover:border-accent-200 hover:text-accent-600 transition-all"
+                                        aria-label="Share"
+                                    >
+                                        <Share2 className="w-4 h-4 md:w-5 md:h-5" />
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
-                        {/* Important Quotes Section */}
-                        {summary.importantQuotes && summary.importantQuotes.length > 0 && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-8 md:mb-10">
-                                {summary.importantQuotes.map((quote, index) => (
-                                    <div key={index} className="bg-gray-50 rounded-lg p-4 md:p-5 border-l-4 border-accent-500 italic">
-                                        <Quote className="w-5 h-5 md:w-6 md:h-6 text-accent-300 mb-2" />
-                                        <p className="text-gray-800 font-serif text-base md:text-lg mb-2 md:mb-3">"{quote.quote}"</p>
-                                        <p className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider not-italic">
-                                            — {quote.context}
-                                        </p>
-                                    </div>
-                                ))}
+                        {/* Scrollable Content */}
+                        <div className="flex-1 overflow-y-auto p-5 md:p-8 custom-scrollbar">
+
+                            {/* Important Quotes Section */}
+                            {summary.importantQuotes && summary.importantQuotes.length > 0 && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-8 md:mb-10">
+                                    {summary.importantQuotes.map((quote, index) => (
+                                        <div key={index} className="bg-gray-50 rounded-lg p-4 md:p-5 border-l-4 border-accent-500 italic">
+                                            <Quote className="w-5 h-5 md:w-6 md:h-6 text-accent-300 mb-2" />
+                                            <p className="text-gray-800 font-serif text-base md:text-lg mb-2 md:mb-3">"{quote.quote}"</p>
+                                            <p className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider not-italic">
+                                                — {quote.context}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Content */}
+                            <article className="prose prose-sm md:prose-base prose-gray max-w-none prose-headings:font-black prose-p:text-gray-600 prose-a:text-accent-600 hover:prose-a:text-accent-700">
+                                {renderContent(summary.content)}
+                            </article>
+                            {/* Next Chapter/Related */}
+                            <div className="flex flex-col md:flex-row gap-3 md:gap-4 mt-8 md:mt-10 pt-8 md:pt-10 border-t-2 border-dashed border-gray-100">
+                                {relatedVideo && (
+                                    <Link
+                                        href={`/dashboard/videos/${relatedVideo.id}`}
+                                        className="flex-1 flex items-center justify-between p-4 md:p-5 bg-white rounded-lg border-2 border-dashed border-gray-200 hover:border-blue-300 hover:shadow-md transition-all group"
+                                    >
+                                        <div className="flex items-center gap-3 md:gap-4">
+                                            <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                                                <Video className="w-4 h-4 md:w-5 md:h-5" />
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5">Watch Video</p>
+                                                <p className="text-sm md:text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{relatedVideo.title}</p>
+                                            </div>
+                                        </div>
+                                        <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
+                                    </Link>
+                                )}
+                                {relatedQuiz && (
+                                    <Link
+                                        href={`/dashboard/quiz/${relatedQuiz.id}`}
+                                        className="flex-1 flex items-center justify-between p-4 md:p-5 bg-white rounded-lg border-2 border-dashed border-gray-200 hover:border-green-300 hover:shadow-md transition-all group"
+                                    >
+                                        <div className="flex items-center gap-3 md:gap-4">
+                                            <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-green-50 flex items-center justify-center text-green-600">
+                                                <CheckCircle className="w-4 h-4 md:w-5 md:h-5" />
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5">Take Quiz</p>
+                                                <p className="text-sm md:text-base font-bold text-gray-900 group-hover:text-green-600 transition-colors">{relatedQuiz.title}</p>
+                                            </div>
+                                        </div>
+                                        <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-green-600 group-hover:translate-x-1 transition-all" />
+                                    </Link>
+                                )}
                             </div>
-                        )}
-
-                        {/* Content */}
-                        <article className="prose prose-sm md:prose-base prose-gray max-w-none prose-headings:font-black prose-p:text-gray-600 prose-a:text-accent-600 hover:prose-a:text-accent-700">
-                            {renderContent(summary.content)}
-                        </article>
-                    </div>
-
-                    {/* Next Chapter/Related */}
-                    <div className="flex flex-col md:flex-row gap-3 md:gap-4">
-                        {relatedVideo && (
-                            <Link
-                                href={`/dashboard/videos/${relatedVideo.id}`}
-                                className="flex-1 flex items-center justify-between p-4 md:p-5 bg-white rounded-lg border-2 border-dashed border-gray-200 hover:border-blue-300 hover:shadow-md transition-all group"
-                            >
-                                <div className="flex items-center gap-3 md:gap-4">
-                                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
-                                        <Video className="w-4 h-4 md:w-5 md:h-5" />
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5">Watch Video</p>
-                                        <p className="text-sm md:text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{relatedVideo.title}</p>
-                                    </div>
-                                </div>
-                                <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
-                            </Link>
-                        )}
-                        {relatedQuiz && (
-                            <Link
-                                href={`/dashboard/quiz/${relatedQuiz.id}`}
-                                className="flex-1 flex items-center justify-between p-4 md:p-5 bg-white rounded-lg border-2 border-dashed border-gray-200 hover:border-green-300 hover:shadow-md transition-all group"
-                            >
-                                <div className="flex items-center gap-3 md:gap-4">
-                                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-green-50 flex items-center justify-center text-green-600">
-                                        <CheckCircle className="w-4 h-4 md:w-5 md:h-5" />
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5">Take Quiz</p>
-                                        <p className="text-sm md:text-base font-bold text-gray-900 group-hover:text-green-600 transition-colors">{relatedQuiz.title}</p>
-                                    </div>
-                                </div>
-                                <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-green-600 group-hover:translate-x-1 transition-all" />
-                            </Link>
-                        )}
+                        </div>
                     </div>
                 </div>
             </div>

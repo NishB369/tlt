@@ -84,14 +84,14 @@ export function NovelForm({ initialData, isEditing = false }: NovelFormProps) {
                     <button
                         type="button"
                         onClick={() => router.back()}
-                        className="px-4 py-2 text-sm font-bold text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                        className="px-4 py-2 text-sm font-bold text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors cursor-pointer"
                     >
                         Cancel
                     </button>
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="flex items-center gap-2 px-6 py-2 bg-gray-900 text-white font-bold text-sm rounded-lg hover:bg-gray-800 transition-all shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center gap-2 px-6 py-2 bg-gray-900 text-white font-bold text-sm rounded-lg hover:bg-gray-800 transition-all shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                         {isLoading ? (
                             <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -116,7 +116,7 @@ export function NovelForm({ initialData, isEditing = false }: NovelFormProps) {
                         <button
                             type="button"
                             onClick={togglePublish}
-                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 ${formData.isPublished ? 'bg-green-500' : 'bg-gray-200'
+                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 cursor-pointer ${formData.isPublished ? 'bg-green-500' : 'bg-gray-200'
                                 }`}
                         >
                             <span
@@ -128,7 +128,9 @@ export function NovelForm({ initialData, isEditing = false }: NovelFormProps) {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                            <label className="text-xs font-black uppercase text-gray-400 tracking-wider">Title</label>
+                            <label className="text-xs font-black uppercase text-gray-400 tracking-wider">
+                                Title <span className="text-red-500 ml-1">*</span>
+                            </label>
                             <input
                                 type="text"
                                 name="title"
@@ -140,7 +142,9 @@ export function NovelForm({ initialData, isEditing = false }: NovelFormProps) {
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-xs font-black uppercase text-gray-400 tracking-wider">Author</label>
+                            <label className="text-xs font-black uppercase text-gray-400 tracking-wider">
+                                Author <span className="text-red-500 ml-1">*</span>
+                            </label>
                             <input
                                 type="text"
                                 name="author"
@@ -156,7 +160,9 @@ export function NovelForm({ initialData, isEditing = false }: NovelFormProps) {
 
 
                     <div className="space-y-2">
-                        <label className="text-xs font-black uppercase text-gray-400 tracking-wider">Description</label>
+                        <label className="text-xs font-black uppercase text-gray-400 tracking-wider">
+                            Description <span className="text-red-500 ml-1">*</span>
+                        </label>
                         <textarea
                             name="description"
                             value={formData.description}
@@ -170,7 +176,9 @@ export function NovelForm({ initialData, isEditing = false }: NovelFormProps) {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                            <label className="text-xs font-black uppercase text-gray-400 tracking-wider">Total Chapters</label>
+                            <label className="text-xs font-black uppercase text-gray-400 tracking-wider">
+                                Total Chapters <span className="text-red-500 ml-1">*</span>
+                            </label>
                             <input
                                 type="number"
                                 name="totalChapters"
@@ -181,7 +189,9 @@ export function NovelForm({ initialData, isEditing = false }: NovelFormProps) {
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-xs font-black uppercase text-gray-400 tracking-wider">Difficulty</label>
+                            <label className="text-xs font-black uppercase text-gray-400 tracking-wider">
+                                Difficulty <span className="text-red-500 ml-1">*</span>
+                            </label>
                             <div className="relative">
                                 <select
                                     name="difficulty"
@@ -207,7 +217,9 @@ export function NovelForm({ initialData, isEditing = false }: NovelFormProps) {
 
                 {/* Tags Section */}
                 <div className="bg-white p-6 rounded-xl border-2 border-dashed border-gray-200 w-full sm:w-1/4">
-                    <label className="text-xs font-black uppercase text-gray-400 tracking-wider mb-4 block">Tags</label>
+                    <label className="text-xs font-black uppercase text-gray-400 tracking-wider mb-4 block">
+                        Tags <span className="text-red-500 ml-1">*</span>
+                    </label>
                     <div className="flex flex-wrap gap-2">
                         {NOVEL_TAGS.map(tag => {
                             const isSelected = formData.tags.includes(tag);
@@ -216,7 +228,7 @@ export function NovelForm({ initialData, isEditing = false }: NovelFormProps) {
                                     key={tag}
                                     type="button"
                                     onClick={() => toggleTag(tag)}
-                                    className={`px-3 py-1.5 rounded-full text-xs font-bold border-2 transition-all ${isSelected
+                                    className={`px-3 py-1.5 rounded-full text-xs font-bold border-2 transition-all cursor-pointer ${isSelected
                                         ? 'bg-gray-900 text-white border-gray-900'
                                         : 'bg-white text-gray-500 border-gray-100 hover:border-gray-300'
                                         }`}
