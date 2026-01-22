@@ -3,8 +3,11 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useSummaries } from '@/src/hooks/useSummaries';
+import { useBookmarks } from '@/src/hooks/useBookmarks';
 import { MOCK_NOVELS } from '@/src/lib/constants';
+import { cn } from '@/src/lib/utils';
 import { Search, FileText, Download, ArrowRight } from 'lucide-react';
+import { BookmarkButton } from '@/src/components/common/BookmarkButton';
 
 export default function SummaryPage() {
     const [searchQuery, setSearchQuery] = useState('');
@@ -92,11 +95,18 @@ export default function SummaryPage() {
                                     <FileText className="w-5 h-5 md:w-6 md:h-6 text-teal-600" />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2 mb-2 flex-wrap">
-                                        <span className="px-2 py-0.5 md:py-1 text-[10px] font-black text-primary-600 bg-primary-50 rounded border border-dashed border-primary-200 uppercase tracking-widest truncate max-w-full">
-                                            {typeof summary.novel === 'object' ? summary.novel.title : summary.novel}
-                                        </span>
-                                        <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">{summary.chapter}</span>
+                                    <div className="flex items-start justify-between gap-2 mb-2">
+                                        <div className="flex items-center gap-2 flex-wrap">
+                                            <span className="px-2 py-0.5 md:py-1 text-[10px] font-black text-primary-600 bg-primary-50 rounded border border-dashed border-primary-200 uppercase tracking-widest truncate max-w-full">
+                                                {typeof summary.novel === 'object' ? summary.novel.title : summary.novel}
+                                            </span>
+                                            <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">{summary.chapter}</span>
+                                        </div>
+                                        <BookmarkButton
+                                            itemId={summary.id}
+                                            itemType="Summary"
+                                            size="sm"
+                                        />
                                     </div>
                                     <h3 className="font-bold text-lg md:text-xl text-gray-900 mb-2 group-hover:text-primary-600 transition-colors line-clamp-2 leading-tight">
                                         {summary.title}

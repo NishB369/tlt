@@ -19,6 +19,8 @@ export const metadata: Metadata = {
   description: "EdTech platform for college literature students with video lessons, notes, quizzes, and study tools.",
 };
 
+import { Toaster } from 'react-hot-toast';
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -32,6 +34,7 @@ export default function RootLayout({
         <AuthProvider>
           {children}
         </AuthProvider>
+        <Toaster position="bottom-right" />
       </body>
       <GoogleAnalytics
         gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || ""}

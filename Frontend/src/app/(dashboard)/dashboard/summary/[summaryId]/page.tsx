@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSummary } from '@/src/hooks/useSummaries';
+import { useBookmarks } from '@/src/hooks/useBookmarks';
 import { MOCK_VIDEOS, MOCK_QUIZZES } from '@/src/lib/constants';
 import {
     ArrowLeft,
@@ -19,6 +20,7 @@ import {
     ArrowRight
 } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
+import { BookmarkButton } from '@/src/components/common/BookmarkButton';
 
 export default function SummaryDetailPage() {
     const params = useParams();
@@ -38,7 +40,6 @@ export default function SummaryDetailPage() {
     });
 
     const [personalNotes, setPersonalNotes] = useState('');
-    const [isBookmarked, setIsBookmarked] = useState(false);
 
     if (loading) {
         return (
@@ -212,17 +213,11 @@ export default function SummaryDetailPage() {
                                 </h1>
                             </div>
                             <div className="flex items-center gap-3 self-start">
-                                <button
-                                    onClick={() => setIsBookmarked(!isBookmarked)}
-                                    className={cn(
-                                        'p-2 md:p-2.5 rounded-lg border-2 border-dashed transition-all group',
-                                        isBookmarked
-                                            ? 'bg-accent-50 border-accent-200 text-accent-600'
-                                            : 'bg-white border-gray-200 text-gray-400 hover:border-accent-200 hover:text-accent-600'
-                                    )}
-                                >
-                                    <Bookmark className={cn('w-4 h-4 md:w-5 md:h-5', isBookmarked && 'fill-current')} />
-                                </button>
+                                <BookmarkButton
+                                    itemId={summary.id}
+                                    itemType="Summary"
+                                    className="p-2 md:p-2.5"
+                                />
                                 <button className="p-2 md:p-2.5 rounded-lg bg-white border-2 border-dashed border-gray-200 text-gray-400 hover:border-accent-200 hover:text-accent-600 transition-all">
                                     <Download className="w-4 h-4 md:w-5 md:h-5" />
                                 </button>

@@ -2,43 +2,48 @@
 
 import { Bookmark, Video, BookOpen, CheckCircle, FileText, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import { MOCK_VIDEOS, MOCK_NOTES, MOCK_QUIZZES } from '@/src/lib/constants';
+
+import { BookmarkButton } from '@/src/components/common/BookmarkButton';
+import { useBookmarks } from '@/src/hooks/useBookmarks';
 import { cn } from '@/src/lib/utils';
 
 export default function BookmarksPage() {
-    // Mock bookmarked items
-    const bookmarks = [
-        { type: 'video' as const, item: MOCK_VIDEOS[1] },
-        { type: 'note' as const, item: MOCK_NOTES[0] },
-        { type: 'quiz' as const, item: MOCK_QUIZZES[0] },
-    ];
+    const { bookmarks, isLoading } = useBookmarks();
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+            </div>
+        );
+    }
 
     const getIcon = (type: string) => {
         switch (type) {
-            case 'video': return Video;
-            case 'note': return BookOpen;
-            case 'quiz': return CheckCircle;
-            case 'summary': return FileText;
+            case 'Video': return Video;
+            case 'Note': return BookOpen;
+            case 'Quiz': return CheckCircle;
+            case 'Summary': return FileText;
             default: return Bookmark;
         }
     };
 
     const getColor = (type: string) => {
         switch (type) {
-            case 'video': return 'text-blue-600 bg-blue-50 border-blue-200 group-hover:bg-blue-100 group-hover:border-blue-300';
-            case 'note': return 'text-purple-600 bg-purple-50 border-purple-200 group-hover:bg-purple-100 group-hover:border-purple-300';
-            case 'quiz': return 'text-green-600 bg-green-50 border-green-200 group-hover:bg-green-100 group-hover:border-green-300';
-            case 'summary': return 'text-teal-600 bg-teal-50 border-teal-200 group-hover:bg-teal-100 group-hover:border-teal-300';
+            case 'Video': return 'text-blue-600 bg-blue-50 border-blue-200 group-hover:bg-blue-100 group-hover:border-blue-300';
+            case 'Note': return 'text-purple-600 bg-purple-50 border-purple-200 group-hover:bg-purple-100 group-hover:border-purple-300';
+            case 'Quiz': return 'text-green-600 bg-green-50 border-green-200 group-hover:bg-green-100 group-hover:border-green-300';
+            case 'Summary': return 'text-teal-600 bg-teal-50 border-teal-200 group-hover:bg-teal-100 group-hover:border-teal-300';
             default: return 'text-gray-600 bg-gray-50 border-gray-200 group-hover:bg-gray-100 group-hover:border-gray-300';
         }
     };
 
     const getLink = (type: string, id: string) => {
         switch (type) {
-            case 'video': return `/dashboard/videos/${id}`;
-            case 'note': return `/dashboard/notes/${id}`;
-            case 'quiz': return `/dashboard/quiz/${id}`;
-            case 'summary': return `/dashboard/summary/${id}`;
+            case 'Video': return `/dashboard/videos/${id}`;
+            case 'Note': return `/dashboard/notes/${id}`;
+            case 'Quiz': return `/dashboard/quiz/${id}`;
+            case 'Summary': return `/dashboard/summary/${id}`;
             default: return '#';
         }
     };
@@ -53,14 +58,14 @@ export default function BookmarksPage() {
 
             {/* Bookmarks List */}
             <div className="bg-white rounded-lg shadow-sm border-2 border-dashed border-gray-200 overflow-hidden">
-                {bookmarks.map((bookmark, index) => {
-                    const Icon = getIcon(bookmark.type);
-                    const colorClass = getColor(bookmark.type);
+                {bookmarks.map((bookmark: any, index: number) => {
+                    const Icon = getIcon(bookmark.onModel);
+                    const colorClass = getColor(bookmark.onModel);
 
                     return (
                         <Link
-                            key={index}
-                            href={getLink(bookmark.type, bookmark.item.id)}
+                            key={bookmark._id}
+                            href={getLink(bookmark.onModel, bookmark.item._id)}
                             className="group flex flex-col sm:flex-row sm:items-center gap-3 md:gap-4 p-4 hover:bg-gray-50 transition-all border-b-2 border-dashed border-gray-100 last:border-b-0"
                         >
                             <div className="flex items-center gap-3 md:gap-4 w-full sm:w-auto">
@@ -72,22 +77,19 @@ export default function BookmarksPage() {
                                         {bookmark.item.title}
                                     </p>
                                     <p className="text-[10px] font-bold text-gray-400 capitalize flex items-center gap-2">
-                                        <span className="uppercase tracking-wider">{bookmark.type}</span>
+                                        <span className="uppercase tracking-wider">{bookmark.onModel}</span>
                                         <span>•</span>
                                         <span className="truncate max-w-[150px]">{'novel' in bookmark.item ? (typeof bookmark.item.novel === 'string' ? bookmark.item.novel : bookmark.item.novel.title) : ''}</span>
                                     </p>
                                 </div>
                                 {/* Mobile Actions */}
                                 <div className="sm:hidden flex items-center">
-                                    <button
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            // Remove bookmark
-                                        }}
-                                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                                    >
-                                        <Bookmark className="w-4 h-4 fill-current" />
-                                    </button>
+                                    <BookmarkButton
+                                        itemId={bookmark.item._id}
+                                        itemType={bookmark.onModel}
+                                        className="text-accent-500 bg-accent-50 hover:text-red-500 hover:bg-red-50 hover:border-red-200"
+                                        size="md"
+                                    />
                                 </div>
                             </div>
 
@@ -96,22 +98,19 @@ export default function BookmarksPage() {
                                     {bookmark.item.title}
                                 </p>
                                 <p className="text-xs font-bold text-gray-400 capitalize flex items-center gap-2">
-                                    <span className="uppercase tracking-wider">{bookmark.type}</span>
+                                    <span className="uppercase tracking-wider">{bookmark.onModel}</span>
                                     <span>•</span>
                                     <span>{'novel' in bookmark.item ? (typeof bookmark.item.novel === 'string' ? bookmark.item.novel : bookmark.item.novel.title) : ''}</span>
                                 </p>
                             </div>
 
                             <div className="hidden sm:flex items-center gap-2">
-                                <button
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        // Remove bookmark
-                                    }}
-                                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                                >
-                                    <Bookmark className="w-5 h-5 fill-current" />
-                                </button>
+                                <BookmarkButton
+                                    itemId={bookmark.item._id}
+                                    itemType={bookmark.onModel}
+                                    className="text-accent-500 bg-accent-50 hover:text-red-500 hover:bg-red-50 hover:border-red-200"
+                                    size="md"
+                                />
                                 <ArrowRight className="w-5 h-5 text-gray-300 group-hover:text-primary-500 group-hover:translate-x-1 transition-all" />
                             </div>
                         </Link>

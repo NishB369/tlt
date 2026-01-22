@@ -1,18 +1,18 @@
 'use client';
 
 import Link from 'next/link';
-import { Play, CheckCircle, Bookmark } from 'lucide-react';
+import { Play, CheckCircle } from 'lucide-react';
 import { formatDuration, cn } from '@/src/lib/utils';
 import { Video } from '@/src/types';
+import { BookmarkButton } from '@/src/components/common/BookmarkButton';
 
 interface VideoCardProps {
     video: Video;
     progress?: number; // 0-100
     completed?: boolean;
-    isBookmarked?: boolean;
 }
 
-export function VideoCard({ video, progress = 0, completed = false, isBookmarked = false }: VideoCardProps) {
+export function VideoCard({ video, progress = 0, completed = false }: VideoCardProps) {
     return (
         <Link
             href={`/dashboard/videos/${video.id}`}
@@ -48,20 +48,14 @@ export function VideoCard({ video, progress = 0, completed = false, isBookmarked
                 )}
 
                 {/* Bookmark Button */}
-                <button
-                    className={cn(
-                        'absolute top-2 left-2 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300',
-                        isBookmarked
-                            ? 'bg-accent-500 text-white shadow-md'
-                            : 'bg-black/50 text-white opacity-0 group-hover:opacity-100 hover:bg-black/70'
-                    )}
-                    onClick={(e) => {
-                        e.preventDefault();
-                        // Handle bookmark toggle
-                    }}
-                >
-                    <Bookmark className={cn('w-4 h-4', isBookmarked && 'fill-current')} />
-                </button>
+                <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <BookmarkButton
+                        itemId={video.id}
+                        itemType="Video"
+                        size="sm"
+                        className="bg-black/50 text-white border-transparent hover:bg-black/70 hover:border-transparent hover:text-white shadow-md w-8 h-8 flex items-center justify-center p-0"
+                    />
+                </div>
 
                 {/* Progress Bar */}
                 {progress > 0 && !completed && (

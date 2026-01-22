@@ -3,8 +3,11 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useNotes } from '@/src/hooks/useNotes';
+import { useBookmarks } from '@/src/hooks/useBookmarks';
 import { MOCK_NOVELS } from '@/src/lib/constants';
-import { Search, BookOpen, Clock, Bookmark, FileText } from 'lucide-react';
+import { cn } from '@/src/lib/utils';
+import { Search, BookOpen, Clock, FileText } from 'lucide-react';
+import { BookmarkButton } from '@/src/components/common/BookmarkButton';
 import { formatRelativeTime } from '@/src/lib/utils';
 
 export default function NotesPage() {
@@ -97,15 +100,11 @@ export default function NotesPage() {
                             <div className="p-2.5 md:p-3 rounded-lg border-2 border-dashed border-gray-100 bg-gray-50 group-hover:border-accent-200 group-hover:bg-accent-50 transition-colors">
                                 <BookOpen className="w-5 h-5 md:w-6 md:h-6 text-gray-400 group-hover:text-accent-500 transition-colors" />
                             </div>
-                            <button
-                                className="p-2 rounded-lg text-gray-300 hover:text-accent-500 hover:bg-accent-50 transition-all"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    // Handle bookmark
-                                }}
-                            >
-                                <Bookmark className="w-5 h-5" />
-                            </button>
+                            <BookmarkButton
+                                itemId={note.id}
+                                itemType="Note"
+                                className="shadow-sm"
+                            />
                         </div>
 
                         <div className="flex items-center gap-2 mb-3">
