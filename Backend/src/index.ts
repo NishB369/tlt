@@ -11,6 +11,7 @@ import { createCrudRouter } from './utils/createCrudRouter';
 import { Summary } from './models/summaryModel';
 import { Note } from './models/noteModel';
 import { Quiz } from './models/quizModel';
+import bookmarkRoutes from './routes/bookmarkRoutes';
 
 dotenv.config();
 
@@ -36,6 +37,7 @@ app.use('/api/videos', videoRoutes);
 app.use('/api/summaries', createCrudRouter(Summary, { path: 'novel', select: 'title' }));
 app.use('/api/notes', createCrudRouter(Note, { path: 'novel', select: 'title' }));
 app.use('/api/quizzes', createCrudRouter(Quiz, { path: 'novel', select: 'title' }));
+app.use('/api/bookmarks', bookmarkRoutes);
 app.use('/api/stats', statsRoutes);
 
 // Health Check Route
