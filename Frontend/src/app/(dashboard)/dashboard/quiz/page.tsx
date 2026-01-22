@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useQuizzes } from '@/src/hooks/useQuizzes';
 import { useBookmarks } from '@/src/hooks/useBookmarks';
-import { MOCK_NOVELS } from '@/src/lib/constants';
+import { useNovels } from '@/src/hooks/useNovels';
 import { Search, Clock, CheckCircle, Trophy, ArrowRight, HelpCircle } from 'lucide-react';
 import { BookmarkButton } from '@/src/components/common/BookmarkButton';
 import { cn } from '@/src/lib/utils';
@@ -14,6 +14,7 @@ export default function QuizListPage() {
     const [selectedNovel, setSelectedNovel] = useState<string>('all');
 
     const { quizzes, loading, error } = useQuizzes();
+    const { novels } = useNovels();
 
     const filteredQuizzes = quizzes.filter((quiz) => {
         const matchesSearch = quiz.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -80,7 +81,7 @@ export default function QuizListPage() {
                         className="w-full sm:w-auto appearance-none pl-4 pr-10 py-2.5 md:py-3 bg-white border-2 border-dashed border-gray-200 rounded-lg text-sm font-bold text-gray-700 focus:outline-none focus:border-accent-500 focus:ring-0 transition-all cursor-pointer hover:border-gray-300 min-w-[200px]"
                     >
                         <option value="all">All Novels</option>
-                        {MOCK_NOVELS.map((novel) => (
+                        {novels.map((novel) => (
                             <option key={novel.id} value={novel.title}>
                                 {novel.title}
                             </option>
