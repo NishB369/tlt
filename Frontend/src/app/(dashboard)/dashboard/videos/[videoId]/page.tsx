@@ -4,8 +4,7 @@ import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useVideo, useVideos } from '@/src/hooks/useVideos';
-import { useBookmarks } from '@/src/hooks/useBookmarks';
-import { MOCK_NOTES, MOCK_QUIZZES } from '@/src/lib/constants';
+import { MOCK_NOTES, MOCK_QUIZZES, DEFAULT_VIDEO_THUMBNAIL } from '@/src/lib/constants';
 import { formatDuration, cn } from '@/src/lib/utils';
 import {
     ArrowLeft,
@@ -95,17 +94,17 @@ export default function VideoPlayerPage() {
                                 >
                                     {/* Thumbnail */}
                                     <img
-                                        src={video.thumbnail}
+                                        src={video.thumbnail || DEFAULT_VIDEO_THUMBNAIL}
                                         alt={video.title}
                                         className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
                                     />
 
                                     {/* Play Button Overlay */}
                                     <div className="absolute inset-0 flex items-center justify-center">
-                                        <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/5 group-hover:bg-white/20 group-hover:scale-110 transition-all shadow-lg">
+                                        <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl bg-accent-500 flex items-center justify-center group-hover:scale-110 transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]">
                                             <Play className="w-8 h-8 md:w-10 md:h-10 text-white fill-current ml-1" />
                                         </div>
-                                        <p className="absolute mt-24 text-white/80 text-[10px] md:text-xs font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <p className="absolute mt-28 text-white/80 text-[10px] md:text-xs font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
                                             Click to Play
                                         </p>
                                     </div>
@@ -259,7 +258,7 @@ export default function VideoPlayerPage() {
                             >
                                 <div className="relative aspect-video rounded-lg overflow-hidden mb-3 border-2 border-dashed border-gray-200 group-hover:border-accent-200 transition-colors bg-gray-100">
                                     <img
-                                        src={relatedVideos[0].thumbnail}
+                                        src={relatedVideos[0].thumbnail || DEFAULT_VIDEO_THUMBNAIL}
                                         alt={relatedVideos[0].title}
                                         className="w-full h-full object-cover grayscale brightness-90 group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-500"
                                     />

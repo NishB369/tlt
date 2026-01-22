@@ -34,7 +34,28 @@ export default function RootLayout({
         <AuthProvider>
           {children}
         </AuthProvider>
-        <Toaster position="bottom-right" />
+        <Toaster
+          position="bottom-right"
+          toastOptions={{
+            className: '!bg-white !text-gray-900 !border-2 !border-dashed !border-gray-200 !shadow-sm !rounded-lg !font-bold !text-sm',
+            duration: 3000,
+            style: {
+              boxShadow: 'none',
+            },
+            success: {
+              iconTheme: {
+                primary: '#ff5500',
+                secondary: '#fff',
+              },
+            },
+            error: {
+              iconTheme: {
+                primary: '#ef4444',
+                secondary: '#fef2f2',
+              },
+            },
+          }}
+        />
       </body>
       <GoogleAnalytics
         gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || ""}

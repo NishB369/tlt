@@ -391,3 +391,5 @@ export const MOCK_RECENT_ACTIVITY = [
         time: new Date(Date.now() - 1000 * 60 * 60 * 24), // Yesterday
     },
 ];
+
+export const DEFAULT_VIDEO_THUMBNAIL = 'https://placehold.co/600x400/ff5500/ffffff?text=LitTalks';
