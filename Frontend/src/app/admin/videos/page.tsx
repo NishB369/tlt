@@ -5,12 +5,9 @@ import Link from 'next/link';
 import {
     Plus,
     Search,
-    LayoutGrid,
-    List as ListIcon,
     Edit,
     Trash2,
-    Video,
-    PlayCircle
+    Video
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -19,7 +16,7 @@ import { Video as VideoType } from '@/src/types';
 
 export default function AdminVideosPage() {
     const router = useRouter();
-    const [viewMode, setViewMode] = useState<'list' | 'card'>('list');
+
     const [searchQuery, setSearchQuery] = useState('');
     const [videos, setVideos] = useState<VideoType[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -92,20 +89,6 @@ export default function AdminVideosPage() {
                         className="w-full pl-12 pr-4 py-3 bg-transparent font-medium focus:outline-none"
                     />
                 </div>
-                <div className="flex items-center gap-2 px-2 border-t sm:border-t-0 sm:border-l border-gray-100 pt-2 sm:pt-0">
-                    <button
-                        onClick={() => setViewMode('list')}
-                        className={`p-2 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-gray-100 text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
-                    >
-                        <ListIcon className="w-5 h-5" />
-                    </button>
-                    <button
-                        onClick={() => setViewMode('card')}
-                        className={`p-2 rounded-lg transition-colors ${viewMode === 'card' ? 'bg-gray-100 text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
-                    >
-                        <LayoutGrid className="w-5 h-5" />
-                    </button>
-                </div>
             </div>
 
             {/* Content */}
@@ -126,7 +109,7 @@ export default function AdminVideosPage() {
                         Add New Video
                     </Link>
                 </div>
-            ) : viewMode === 'list' ? (
+            ) : (
                 // List View
                 <div className="bg-white rounded-xl border-2 border-dashed border-gray-200 overflow-hidden">
                     <div className="overflow-x-auto">
@@ -195,54 +178,6 @@ export default function AdminVideosPage() {
                             </tbody>
                         </table>
                     </div>
-                </div>
-            ) : (
-                // Card View
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {filteredVideos.map((video: any) => (
-                        <div key={video._id || video.id} className="group relative bg-white rounded-xl border-2 border-dashed border-gray-200 overflow-hidden hover:border-gray-400 transition-all hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)]">
-                            <div className="aspect-video bg-gray-100 relative overflow-hidden group-hover:bg-gray-200 transition-colors">
-                                {video.thumbnail ? (
-                                    <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-gray-300">
-                                        <PlayCircle className="w-10 h-10" />
-                                    </div>
-                                )}
-
-                                <div className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-black/70 rounded text-[10px] font-bold text-white">
-                                    {formatDuration(video.duration)}
-                                </div>
-
-                                {/* Overlay Actions */}
-                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 backdrop-blur-[1px]">
-                                    <Link
-                                        href={`/admin/videos/${video._id || video.id}`}
-                                        className="p-3 bg-white rounded-full text-gray-900 hover:scale-110 transition-transform shadow-lg"
-                                    >
-                                        <Edit className="w-5 h-5" />
-                                    </Link>
-                                    <button
-                                        onClick={() => setShowDeleteModal(video._id || video.id)}
-                                        className="p-3 bg-white rounded-full text-red-500 hover:scale-110 transition-transform shadow-lg"
-                                    >
-                                        <Trash2 className="w-5 h-5" />
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="p-4 bg-white border-t-2 border-dashed border-gray-100">
-                                <h3 className="font-bold text-gray-900 truncate mb-1" title={video.title}>{video.title}</h3>
-                                <p className="text-xs font-bold text-gray-500 mb-2 truncate">
-                                    {typeof video.novel === 'object' ? video.novel?.title : video.novel} • {video.chapter}
-                                </p>
-                                <div className="flex items-center justify-between">
-                                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider ${video.isPublished ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                                        {video.isPublished ? 'Live' : 'Draft'}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
                 </div>
             )}
 

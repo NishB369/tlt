@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { VideoCard } from '@/src/components/videos/VideoCard';
+import { VideoListSkeleton } from '@/src/components/common/Skeletons';
 import { Search, BookOpen, Video as VideoIcon, ChevronDown } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import type { Video } from '@/src/types';
@@ -84,19 +85,7 @@ export default function VideosPage() {
     }, {} as Record<string, Video[]>);
 
     if (loading) {
-        return (
-            <div className="space-y-6 md:space-y-8 animate-fade-in max-w-7xl mx-auto p-2 md:p-0">
-                <div className="flex flex-col gap-2">
-                    <div className="h-10 w-48 bg-gray-200 rounded animate-pulse" />
-                    <div className="h-5 w-64 bg-gray-200 rounded animate-pulse" />
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                        <div key={i} className="aspect-video bg-gray-200 rounded-xl animate-pulse" />
-                    ))}
-                </div>
-            </div>
-        );
+        return <VideoListSkeleton />;
     }
 
     if (error) {

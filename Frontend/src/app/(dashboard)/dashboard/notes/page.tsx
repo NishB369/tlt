@@ -9,6 +9,7 @@ import { cn } from '@/src/lib/utils';
 import { Search, BookOpen, Clock, FileText } from 'lucide-react';
 import { BookmarkButton } from '@/src/components/common/BookmarkButton';
 import { formatRelativeTime } from '@/src/lib/utils';
+import { NoteListSkeleton } from '@/src/components/common/Skeletons';
 
 export default function NotesPage() {
     const [searchQuery, setSearchQuery] = useState('');
@@ -28,13 +29,7 @@ export default function NotesPage() {
     });
 
     if (loading) {
-        return (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 animate-pulse max-w-7xl mx-auto mt-20">
-                {[...Array(6)].map((_, i) => (
-                    <div key={i} className="h-64 bg-gray-100 rounded-lg"></div>
-                ))}
-            </div>
-        );
+        return <NoteListSkeleton />;
     }
 
     if (error) {
