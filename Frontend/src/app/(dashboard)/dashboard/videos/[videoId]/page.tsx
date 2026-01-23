@@ -17,6 +17,7 @@ import {
     ChevronRight,
 } from 'lucide-react';
 import { BookmarkButton } from '@/src/components/common/BookmarkButton';
+import { VideoDetailSkeleton } from '@/src/components/common/Skeletons';
 
 export default function VideoPlayerPage() {
     const params = useParams();
@@ -49,11 +50,7 @@ export default function VideoPlayerPage() {
     const [userNotes, setUserNotes] = useState('');
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center h-96">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-            </div>
-        );
+        return <VideoDetailSkeleton />;
     }
 
     if (error || !video) {

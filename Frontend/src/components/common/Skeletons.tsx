@@ -49,6 +49,153 @@ export function VideoCardSkeleton() {
 }
 
 // ----------------------------------------------------------------------
+// Video Detail Skeleton
+// ----------------------------------------------------------------------
+export function VideoDetailSkeleton() {
+    return (
+        <div className="space-y-6 max-w-7xl mx-auto">
+            {/* Back Button Skeleton */}
+            <Skeleton className="w-32 h-5 rounded" />
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+                {/* Main Content */}
+                <div className="lg:col-span-2 space-y-6 lg:space-y-8">
+                    {/* Video Player */}
+                    <div className="bg-black rounded-lg overflow-hidden aspect-video relative">
+                        <Skeleton className="w-full h-full bg-gray-800 animate-pulse" />
+                    </div>
+
+                    {/* Video Info */}
+                    <div className="bg-white rounded-lg p-4 md:p-8 shadow-sm border-2 border-dashed border-gray-200">
+                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4 md:mb-6">
+                            <div className="space-y-3 md:space-y-4 w-full">
+                                <div className="flex items-center gap-2 md:gap-3">
+                                    <Skeleton className="w-24 h-6 rounded" />
+                                    <Skeleton className="w-16 h-6 rounded" />
+                                </div>
+                                <Skeleton className="w-3/4 h-8 rounded" />
+                            </div>
+                            <Skeleton className="w-10 h-10 rounded-lg" />
+                        </div>
+                        <div className="space-y-2 mb-6">
+                            <Skeleton className="w-full h-4 rounded" />
+                            <Skeleton className="w-full h-4 rounded" />
+                            <Skeleton className="w-2/3 h-4 rounded" />
+                        </div>
+
+                        {/* Related Resources */}
+                        <div className="flex gap-4 pt-6 border-t-2 border-dashed border-gray-100">
+                            <Skeleton className="w-32 h-10 rounded-lg" />
+                            <Skeleton className="w-32 h-10 rounded-lg" />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Sidebar */}
+                <div className="space-y-6">
+                    <div className="bg-white rounded-lg shadow-sm border-2 border-dashed border-gray-200 overflow-hidden h-96 p-4 space-y-4">
+                        <Skeleton className="w-full h-8 rounded mb-4" />
+                        {[1, 2, 3, 4].map(i => (
+                            <div key={i} className="flex gap-3">
+                                <Skeleton className="w-8 h-8 rounded-lg" />
+                                <div className="flex-1 space-y-1">
+                                    <Skeleton className="w-full h-4 rounded" />
+                                    <Skeleton className="w-1/2 h-3 rounded" />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+// ----------------------------------------------------------------------
+// Note / Summary Detail Skeleton
+// ----------------------------------------------------------------------
+export function NoteDetailSkeleton() {
+    return (
+        <div className="space-y-6 max-w-7xl mx-auto">
+            {/* Back Button Skeleton */}
+            <Skeleton className="w-32 h-5 rounded" />
+
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
+                {/* Sidebar */}
+                <div className="lg:col-span-1 space-y-6">
+                    <div className="bg-white rounded-lg p-6 border-2 border-dashed border-gray-200 h-64">
+                        <Skeleton className="w-full h-6 rounded mb-4" />
+                        <div className="space-y-3">
+                            <Skeleton className="w-full h-4 rounded" />
+                            <Skeleton className="w-3/4 h-4 rounded" />
+                            <Skeleton className="w-5/6 h-4 rounded" />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Main Content */}
+                <div className="lg:col-span-3">
+                    <div className="bg-white rounded-lg shadow-sm border-2 border-dashed border-gray-200 p-8 h-[80vh]">
+                        <div className="flex justify-between items-start mb-8 border-b-2 border-dashed border-gray-100 pb-8">
+                            <div className="space-y-4 w-full">
+                                <div className="flex gap-3">
+                                    <Skeleton className="w-24 h-6 rounded" />
+                                    <Skeleton className="w-16 h-6 rounded" />
+                                </div>
+                                <Skeleton className="w-3/4 h-10 rounded" />
+                            </div>
+                            <div className="flex gap-3">
+                                <Skeleton className="w-10 h-10 rounded-lg" />
+                                <Skeleton className="w-10 h-10 rounded-lg" />
+                            </div>
+                        </div>
+
+                        <div className="space-y-6">
+                            <Skeleton className="w-full h-4 rounded" />
+                            <Skeleton className="w-full h-4 rounded" />
+                            <Skeleton className="w-full h-4 rounded" />
+                            <Skeleton className="w-5/6 h-4 rounded" />
+
+                            <Skeleton className="w-1/3 h-8 rounded mt-8 mb-4" />
+
+                            <Skeleton className="w-full h-4 rounded" />
+                            <Skeleton className="w-full h-4 rounded" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+// ----------------------------------------------------------------------
+// Quiz Detail Skeleton
+// ----------------------------------------------------------------------
+export function QuizDetailSkeleton() {
+    return (
+        <div className="max-w-7xl mx-auto space-y-6">
+            <Skeleton className="w-32 h-5 rounded" />
+
+            <div className="max-w-3xl mx-auto">
+                <div className="bg-white rounded-lg p-10 border-2 border-dashed border-gray-200 text-center relative">
+                    <Skeleton className="w-24 h-24 mx-auto mb-8 rounded-lg" />
+                    <Skeleton className="w-3/4 h-10 mx-auto mb-4 rounded" />
+                    <Skeleton className="w-1/2 h-6 mx-auto mb-10 rounded" />
+
+                    <div className="grid grid-cols-4 gap-6 mb-12">
+                        {[1, 2, 3, 4].map(i => (
+                            <Skeleton key={i} className="h-24 rounded-lg" />
+                        ))}
+                    </div>
+
+                    <Skeleton className="w-48 h-12 mx-auto rounded-lg" />
+                </div>
+            </div>
+        </div>
+    )
+}
+
+// ----------------------------------------------------------------------
 // Note / Summary Card Skeleton
 // ----------------------------------------------------------------------
 export function NoteCardSkeleton() {
