@@ -8,6 +8,7 @@ import { useNovels } from '@/src/hooks/useNovels';
 import { cn } from '@/src/lib/utils';
 import { Search, FileText, ArrowRight } from 'lucide-react';
 import { BookmarkButton } from '@/src/components/common/BookmarkButton';
+import { NoteListSkeleton } from '@/src/components/common/Skeletons';
 
 export default function SummaryPage() {
     const [searchQuery, setSearchQuery] = useState('');
@@ -25,13 +26,7 @@ export default function SummaryPage() {
     });
 
     if (loading) {
-        return (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 animate-pulse max-w-7xl mx-auto mt-20">
-                {[...Array(4)].map((_, i) => (
-                    <div key={i} className="h-64 bg-gray-100 rounded-lg"></div>
-                ))}
-            </div>
-        );
+        return <NoteListSkeleton />;
     }
 
     if (error) {
